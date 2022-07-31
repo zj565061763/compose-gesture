@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,18 +40,22 @@ class MainActivity : ComponentActivity() {
 private fun SampleOnPointerChange(
     modifier: Modifier = Modifier,
 ) {
+    var downCount by remember { mutableStateOf(0) }
     Box(
         modifier = modifier
             .fillMaxSize()
             .fOnPointerChange(
                 onStart = {
+                    downCount = 0
                     logMsg { "onPointerChange onStart" }
                 },
                 onDown = {
-                    logMsg { "onPointerChange onDown id:${it.id} ${it}" }
+                    downCount++
+                    logMsg { "onPointerChange onDown count:$downCount id:${it.id} ${it}" }
                 },
                 onUp = {
-                    logMsg { "onPointerChange onUp id:${it.id} ${it}" }
+                    downCount--
+                    logMsg { "onPointerChange onUp count:$downCount id:${it.id} ${it}" }
                 },
                 onFinish = {
                     logMsg { "onPointerChange onFinish" }
