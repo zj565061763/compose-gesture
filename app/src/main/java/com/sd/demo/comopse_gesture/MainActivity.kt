@@ -71,7 +71,7 @@ private fun SampleAwait(
                 forEachGesture {
                     awaitPointerEventScope {
                         fAwaitDowns(count = 2)
-                        logMsg { "fAwaitDown" }
+                        logMsg { "fAwaitDowns" }
 
                         fAwaitAllPointersUp()
                         logMsg { "fAwaitAllPointersUp" }
