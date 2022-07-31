@@ -18,7 +18,6 @@ import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fAwaitAllPointersUp
 import com.sd.lib.compose.gesture.fAwaitDowns
 import com.sd.lib.compose.gesture.fOnPointerChange
-import com.sd.lib.compose.gesture.fOnPointerDownChange
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,19 +34,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-@Composable
-private fun SampleOnPointerDownChange(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .fOnPointerDownChange {
-                logMsg { "fOnPointerDownChange size:${it.size}" }
-            }
-    )
 }
 
 @Composable

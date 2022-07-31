@@ -37,24 +37,6 @@ fun Modifier.fOnPointerChange(
     }
 }
 
-fun Modifier.fOnPointerDownChange(
-    requireUnconsumed: Boolean = true,
-    pass: PointerEventPass = PointerEventPass.Main,
-    block: (List<PointerInputChange>) -> Unit
-) = pointerInput(Unit) {
-    val pointerHolder = mutableMapOf<PointerId, PointerInputChange>()
-    awaitPointerEventScope {
-        while (true) {
-            val oldCount = pointerHolder.size
-            val event = awaitPointerEvent(pass = pass)
-            event.fillDownMap(requireUnconsumed = requireUnconsumed, map = pointerHolder)
-            if (oldCount != pointerHolder.size) {
-                block(pointerHolder.values.toList())
-            }
-        }
-    }
-}
-
 suspend fun AwaitPointerEventScope.fAwaitDowns(
     count: Int = 2,
     requireUnconsumed: Boolean = true,
