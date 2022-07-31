@@ -58,11 +58,17 @@ private fun SampleOnPointerChange(
         modifier = modifier
             .fillMaxSize()
             .fOnPointerChange(
-                onDownFirst = {
-                    logMsg { "fOnPointerChange onDownFirst:${it}" }
+                onStart = {
+                    logMsg { "onPointerChange onStart" }
                 },
-                onUpAll = {
-                    logMsg { "fOnPointerChange onUpAll maxDownCount:${it}" }
+                onDown = {
+                    logMsg { "onPointerChange onDown id:${it.id} ${it}" }
+                },
+                onUp = {
+                    logMsg { "onPointerChange onUp id:${it.id} ${it}" }
+                },
+                onFinish = {
+                    logMsg { "onPointerChange onFinish}" }
                 },
             )
     )
