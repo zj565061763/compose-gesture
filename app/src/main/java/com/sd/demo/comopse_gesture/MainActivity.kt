@@ -102,7 +102,7 @@ private fun SampleVelocityTracker(
             .fillMaxSize()
             .fOnPointerChange(
                 onStart = {
-                    logMsg { "onPointerChange onFinish" }
+                    logMsg { "onPointerChange onStart" }
                     firstPointer = it
                     firstPointerVelocityTracker.resetTracking()
                     firstPointerVelocityTracker.addPosition(it.uptimeMillis, it.position)
