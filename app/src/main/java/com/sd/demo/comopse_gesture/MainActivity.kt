@@ -68,7 +68,7 @@ private fun SampleOnPointerChange(
                     logMsg { "onPointerChange onUp id:${it.id} ${it}" }
                 },
                 onFinish = {
-                    logMsg { "onPointerChange onFinish}" }
+                    logMsg { "onPointerChange onFinish" }
                 },
             )
     )
