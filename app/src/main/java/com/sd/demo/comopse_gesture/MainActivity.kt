@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fAwaitAllPointersUp
 import com.sd.lib.compose.gesture.fAwaitDowns
-import com.sd.lib.compose.gesture.fOnAllPointersUp
+import com.sd.lib.compose.gesture.fOnPointerChange
 import com.sd.lib.compose.gesture.fOnPointerDownChange
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MainView()
+                    SampleOnPointerChange()
                 }
             }
         }
@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun MainView(
+private fun SampleOnPointerDownChange(
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -47,9 +47,34 @@ private fun MainView(
             .fOnPointerDownChange {
                 logMsg { "fOnPointerDownChange size:${it.size}" }
             }
-            .fOnAllPointersUp {
-                logMsg { "fOnAllPointersUp maxDownCount:${it}" }
-            }
+    )
+}
+
+@Composable
+private fun SampleOnPointerChange(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .fOnPointerChange(
+                onDownFirst = {
+                    logMsg { "fOnPointerChange onDownFirst:${it}" }
+                },
+                onUpAll = {
+                    logMsg { "fOnPointerChange onUpAll maxDownCount:${it}" }
+                },
+            )
+    )
+}
+
+@Composable
+private fun SampleAwait(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
             .pointerInput(Unit) {
                 forEachGesture {
                     awaitPointerEventScope {
@@ -61,8 +86,7 @@ private fun MainView(
                     }
                 }
             }
-    ) {
-    }
+    )
 }
 
 @Composable

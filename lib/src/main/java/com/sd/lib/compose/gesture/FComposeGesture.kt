@@ -6,15 +6,17 @@ import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.*
 
-fun Modifier.fOnAllPointersUp(
+fun Modifier.fOnPointerChange(
     requireUnconsumed: Boolean = true,
-    block: (maxDownCount: Int) -> Unit
+    onDownFirst: ((PointerInputChange) -> Unit)? = null,
+    onUpAll: (maxDownCount: Int) -> Unit
 ) = pointerInput(Unit) {
     forEachGesture {
         awaitPointerEventScope {
-            awaitFirstDown(requireUnconsumed = requireUnconsumed)
-            var maxDownCount = 1
+            val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumed)
+            onDownFirst?.invoke(firstDown)
 
+            var maxDownCount = 1
             while (true) {
                 val event = awaitPointerEvent()
                 event.changes.forEach {
@@ -25,7 +27,7 @@ fun Modifier.fOnAllPointersUp(
                 if (!event.fHasPointerDown()) break
             }
 
-            block(maxDownCount)
+            onUpAll(maxDownCount)
         }
     }
 }
