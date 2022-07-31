@@ -11,6 +11,7 @@ fun Modifier.fOnPointerChange(
     onStart: (() -> Unit)? = null,
     onDown: ((PointerInputChange) -> Unit)? = null,
     onUp: ((PointerInputChange) -> Unit)? = null,
+    onMove: ((PointerInputChange) -> Unit)? = null,
     onFinish: () -> Unit
 ) = pointerInput(Unit) {
     forEachGesture {
@@ -21,15 +22,19 @@ fun Modifier.fOnPointerChange(
 
             while (true) {
                 val event = awaitPointerEvent()
+                val hasDown = event.fHasPointerDown()
                 event.changes.forEach {
                     if (it.changedToDown(requireUnconsumed)) {
                         onDown?.invoke(it)
-                    }
-                    if (it.changedToUp(requireUnconsumed)) {
+                    } else if (it.changedToUp(requireUnconsumed)) {
                         onUp?.invoke(it)
+                    } else if (it.positionChanged(requireUnconsumed)) {
+                        if (hasDown) {
+                            onMove?.invoke(it)
+                        }
                     }
                 }
-                if (!event.fHasPointerDown()) break
+                if (!hasDown) break
             }
 
             onFinish()
@@ -68,8 +73,7 @@ private fun PointerEvent.fillDownMap(
     changes.forEach {
         if (it.changedToDown(requireUnconsumed)) {
             map[it.id] = it
-        }
-        if (it.changedToUp(requireUnconsumed)) {
+        } else if (it.changedToUp(requireUnconsumed)) {
             map.remove(it.id)
         }
     }
@@ -81,6 +85,10 @@ private fun PointerInputChange.changedToDown(requireUnconsumed: Boolean): Boolea
 
 private fun PointerInputChange.changedToUp(requireUnconsumed: Boolean): Boolean {
     return if (requireUnconsumed) changedToUp() else changedToUpIgnoreConsumed()
+}
+
+private fun PointerInputChange.positionChanged(requireUnconsumed: Boolean): Boolean {
+    return if (requireUnconsumed) positionChanged() else positionChangedIgnoreConsumed()
 }
 
 internal inline fun logMsg(block: () -> Any) {

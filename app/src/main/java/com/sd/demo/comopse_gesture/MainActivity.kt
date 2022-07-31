@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.tooling.preview.Preview
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fAwaitAllPointersUp
@@ -41,6 +42,8 @@ private fun SampleOnPointerChange(
     modifier: Modifier = Modifier,
 ) {
     var downCount by remember { mutableStateOf(0) }
+    val velocityTracker = remember { VelocityTracker() }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -51,11 +54,14 @@ private fun SampleOnPointerChange(
                 },
                 onDown = {
                     downCount++
-                    logMsg { "onPointerChange onDown count:$downCount id:${it.id} ${it}" }
+                    logMsg { "onPointerChange onDown count:$downCount id:${it.id} $it" }
                 },
                 onUp = {
                     downCount--
-                    logMsg { "onPointerChange onUp count:$downCount id:${it.id} ${it}" }
+                    logMsg { "onPointerChange onUp count:$downCount id:${it.id} $it" }
+                },
+                onMove = {
+                    logMsg { "onPointerChange onMove id:${it.id} $it" }
                 },
                 onFinish = {
                     logMsg { "onPointerChange onFinish" }
