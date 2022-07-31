@@ -8,7 +8,7 @@ import androidx.compose.ui.input.pointer.*
 
 fun Modifier.fOnPointerChange(
     requireUnconsumed: Boolean = true,
-    onStart: (() -> Unit)? = null,
+    onStart: ((PointerInputChange) -> Unit)? = null,
     onDown: ((PointerInputChange) -> Unit)? = null,
     onUp: ((PointerInputChange) -> Unit)? = null,
     onMove: ((PointerInputChange) -> Unit)? = null,
@@ -17,7 +17,7 @@ fun Modifier.fOnPointerChange(
     forEachGesture {
         awaitPointerEventScope {
             val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumed)
-            onStart?.invoke()
+            onStart?.invoke(firstDown)
             onDown?.invoke(firstDown)
 
             while (true) {

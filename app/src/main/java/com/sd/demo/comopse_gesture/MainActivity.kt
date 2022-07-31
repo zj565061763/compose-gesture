@@ -12,6 +12,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,12 +39,31 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+private fun SampleAwait(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                forEachGesture {
+                    awaitPointerEventScope {
+                        fAwaitDowns(count = 2)
+                        logMsg { "fAwaitDowns" }
+
+                        fAwaitAllPointersUp()
+                        logMsg { "fAwaitAllPointersUp" }
+                    }
+                }
+            }
+    )
+}
+
+@Composable
 private fun SampleOnPointerChange(
     modifier: Modifier = Modifier,
 ) {
     var downCount by remember { mutableStateOf(0) }
-    val velocityTracker = remember { VelocityTracker() }
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -71,23 +91,38 @@ private fun SampleOnPointerChange(
 }
 
 @Composable
-private fun SampleAwait(
+private fun SampleVelocityTracker(
     modifier: Modifier = Modifier,
 ) {
+    var firstPointer by remember { mutableStateOf<PointerInputChange?>(null) }
+    val firstPointerVelocityTracker = remember { VelocityTracker() }
+
     Box(
         modifier = modifier
             .fillMaxSize()
-            .pointerInput(Unit) {
-                forEachGesture {
-                    awaitPointerEventScope {
-                        fAwaitDowns(count = 2)
-                        logMsg { "fAwaitDowns" }
-
-                        fAwaitAllPointersUp()
-                        logMsg { "fAwaitAllPointersUp" }
+            .fOnPointerChange(
+                onStart = {
+                    logMsg { "onPointerChange onFinish" }
+                    firstPointer = it
+                    firstPointerVelocityTracker.resetTracking()
+                    firstPointerVelocityTracker.addPosition(it.uptimeMillis, it.position)
+                },
+                onMove = {
+                    if (it.id == firstPointer?.id) {
+                        firstPointerVelocityTracker.addPosition(it.uptimeMillis, it.position)
                     }
-                }
-            }
+                },
+
+                onUp = {
+                    if (it.id == firstPointer?.id) {
+                        val velocity = firstPointerVelocityTracker.calculateVelocity()
+                        logMsg { "velocity $velocity" }
+                    }
+                },
+                onFinish = {
+                    logMsg { "onPointerChange onFinish" }
+                },
+            )
     )
 }
 
