@@ -15,9 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
-import com.sd.lib.compose.gesture.fAwaitAllPointersUp
-import com.sd.lib.compose.gesture.fAwaitDowns
-import com.sd.lib.compose.gesture.fOnPointerChange
+import com.sd.lib.compose.gesture.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,11 +27,27 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleOnPointerChange()
+                    SampleOnClick()
                 }
             }
         }
     }
+}
+
+@Composable
+private fun SampleOnClick(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .fOnClick {
+                logMsg { "onClick" }
+            }
+            .fOnClickTime {
+                logMsg { "onClickTime $it" }
+            }
+    )
 }
 
 @Composable
