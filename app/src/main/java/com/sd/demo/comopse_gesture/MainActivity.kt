@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleOnPointerChange()
+                    SampleVelocityTracker()
                 }
             }
         }
@@ -96,7 +96,7 @@ private fun SampleVelocityTracker(
                     enableVelocity = true
                 },
                 onUp = {
-                    logMsg { "onUp velocity:${getPointerVelocity(it.id)}" }
+                    logMsg { "onUp ${it.id} ${getPointerVelocity(it.id)}" }
                 },
             )
     )
