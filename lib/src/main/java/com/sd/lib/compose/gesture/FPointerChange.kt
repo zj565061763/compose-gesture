@@ -105,7 +105,9 @@ internal class FPointerChangeScopeImpl() : FPointerChangeScope {
         }
         if (_enableVelocity) {
             if (!_downPointersVelocity.containsKey(input.id)) {
-                _downPointersVelocity[input.id] = VelocityTracker()
+                _downPointersVelocity[input.id] = VelocityTracker().also {
+                    it.addPosition(input.uptimeMillis, input.position)
+                }
             }
         }
     }
