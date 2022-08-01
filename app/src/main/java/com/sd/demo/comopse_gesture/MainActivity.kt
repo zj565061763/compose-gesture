@@ -15,7 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
-import com.sd.lib.compose.gesture.*
+import com.sd.lib.compose.gesture.fAwaitAllPointersUp
+import com.sd.lib.compose.gesture.fAwaitDowns
+import com.sd.lib.compose.gesture.fOnClick
+import com.sd.lib.compose.gesture.fOnPointerChange
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,9 +46,6 @@ private fun SampleOnClick(
             .fillMaxSize()
             .fOnClick {
                 logMsg { "onClick" }
-            }
-            .fOnClickTime {
-                logMsg { "onClickTime $it" }
             }
     )
 }

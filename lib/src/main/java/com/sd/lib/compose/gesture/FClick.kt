@@ -9,15 +9,6 @@ fun Modifier.fOnClick(
     requireUnconsumed: Boolean = true,
     time: Long = 150L,
     block: () -> Unit
-) = fOnClickTime(
-    requireUnconsumed = requireUnconsumed,
-) {
-    if (it <= time) block()
-}
-
-fun Modifier.fOnClickTime(
-    requireUnconsumed: Boolean = true,
-    block: (time: Long) -> Unit
 ) = pointerInput(Unit) {
     forEachGesture {
         awaitPointerEventScope {
@@ -25,8 +16,8 @@ fun Modifier.fOnClickTime(
             val event = awaitPointerEvent()
             event.changes.any {
                 if (it.id == firstDown.id && it.changedToUp(requireUnconsumed)) {
-                    val time = it.uptimeMillis - it.previousUptimeMillis
-                    block(time)
+                    val delta = it.uptimeMillis - it.previousUptimeMillis
+                    if (delta <= time) block()
                     true
                 } else false
             }
