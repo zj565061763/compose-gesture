@@ -10,14 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fAwaitAllPointersUp
 import com.sd.lib.compose.gesture.fAwaitDowns
-import com.sd.lib.compose.gesture.fFirstPointerVelocity
 import com.sd.lib.compose.gesture.fOnPointerChange
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleVelocityTracker()
+                    SampleOnPointerChange()
                 }
             }
         }
@@ -62,28 +61,24 @@ private fun SampleAwait(
 private fun SampleOnPointerChange(
     modifier: Modifier = Modifier,
 ) {
-    var downCount by remember { mutableStateOf(0) }
     Box(
         modifier = modifier
             .fillMaxSize()
             .fOnPointerChange(
                 onStart = {
-                    downCount = 0
                     logMsg { "onPointerChange onStart" }
                 },
                 onDown = {
-                    downCount++
-                    logMsg { "onPointerChange onDown count:$downCount id:${it.id} $it" }
+                    logMsg { "onPointerChange onDown count:$downPointerCount" }
                 },
                 onUp = {
-                    downCount--
-                    logMsg { "onPointerChange onUp count:$downCount id:${it.id} $it" }
+                    logMsg { "onPointerChange onUp count:$downPointerCount" }
                 },
                 onMove = {
-                    logMsg { "onPointerChange onMove id:${it.id} $it" }
+                    logMsg { "onPointerChange onMove" }
                 },
                 onFinish = {
-                    logMsg { "onPointerChange onFinish" }
+                    logMsg { "onPointerChange onFinish maxCount:$maxDownPointerCount" }
                 },
             )
     )
@@ -96,9 +91,14 @@ private fun SampleVelocityTracker(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .fFirstPointerVelocity {
-                logMsg { "velocity $it" }
-            }
+            .fOnPointerChange(
+                onStart = {
+                    enableVelocity = true
+                },
+                onUp = {
+                    logMsg { "onUp velocity:${getPointerVelocity(it.id)}" }
+                },
+            )
     )
 }
 
