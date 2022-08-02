@@ -1,26 +1,29 @@
 package com.sd.lib.compose.gesture
 
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.forEachGesture
+import androidx.compose.foundation.gestures.PressGestureScope
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 
-fun Modifier.fOnClick(
-    requireUnconsumed: Boolean = true,
-    time: Long = 150L,
-    block: () -> Unit
+fun Modifier.fClick(
+    onPress: (suspend PressGestureScope.(Offset) -> Unit)? = null,
+    onDoubleTap: ((Offset) -> Unit)? = null,
+    onLongPress: ((Offset) -> Unit)? = null,
+    onTap: ((Offset) -> Unit)? = null,
 ) = pointerInput(Unit) {
-    forEachGesture {
-        awaitPointerEventScope {
-            val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumed)
-            val event = awaitPointerEvent()
-            event.changes.any {
-                if (it.id == firstDown.id && it.changedToUp(requireUnconsumed)) {
-                    val delta = it.uptimeMillis - it.previousUptimeMillis
-                    if (delta <= time) block()
-                    true
-                } else false
-            }
-        }
+    if (onPress != null) {
+        detectTapGestures(
+            onPress = onPress,
+            onDoubleTap = onDoubleTap,
+            onLongPress = onLongPress,
+            onTap = onTap,
+        )
+    } else {
+        detectTapGestures(
+            onDoubleTap = onDoubleTap,
+            onLongPress = onLongPress,
+            onTap = onTap,
+        )
     }
 }

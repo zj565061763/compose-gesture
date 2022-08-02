@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fAwaitAllPointersUp
 import com.sd.lib.compose.gesture.fAwaitDowns
-import com.sd.lib.compose.gesture.fOnClick
+import com.sd.lib.compose.gesture.fClick
 import com.sd.lib.compose.gesture.fOnPointerChange
 
 class MainActivity : ComponentActivity() {
@@ -44,9 +44,20 @@ private fun SampleOnClick(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .fOnClick {
-                logMsg { "onClick" }
-            }
+            .fClick(
+                onPress = {
+                    logMsg { "onPress" }
+                },
+                onDoubleTap = {
+                    logMsg { "onDoubleTap" }
+                },
+                onLongPress = {
+                    logMsg { "onLongPress" }
+                },
+                onTap = {
+                    logMsg { "onTap" }
+                }
+            )
     )
 }
 
