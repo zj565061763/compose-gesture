@@ -69,9 +69,14 @@ interface FGestureScope {
 
 internal open class BaseGestureScope : FDragGestureScope {
     internal var isGestureCanceled = false
+        private set
 
     override fun cancelGesture() {
         isGestureCanceled = true
+    }
+
+    internal fun resetCancelFlag() {
+        isGestureCanceled = false
     }
 }
 

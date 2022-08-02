@@ -26,7 +26,7 @@ fun Modifier.fOnDrag(
                 var pan = Offset.Zero
                 var hasDrag = false
 
-                scopeImpl.isGestureCanceled = false
+                scopeImpl.resetCancelFlag()
                 awaitFirstDown(requireUnconsumed = false)
 
                 while (!scopeImpl.isGestureCanceled) {

@@ -35,9 +35,11 @@ fun Modifier.fOnPointerChange(
 
                 scopeImpl.onStart()
                 onStart?.invoke(scopeImpl)
+                if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
 
                 scopeImpl.onDown(firstDown)
                 onDown?.invoke(scopeImpl, firstDown)
+                if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
 
                 do {
                     val event = awaitPointerEvent()
@@ -64,6 +66,7 @@ fun Modifier.fOnPointerChange(
                             }
                         }
                     }
+                    if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
                 } while (hasDown)
 
                 onFinish?.invoke(scopeImpl)
@@ -72,7 +75,7 @@ fun Modifier.fOnPointerChange(
     }
 }
 
-interface FPointerChangeScope {
+interface FPointerChangeScope : FGestureScope {
     val downPointerCount: Int
 
     val maxDownPointerCount: Int
@@ -82,7 +85,7 @@ interface FPointerChangeScope {
     fun getPointerVelocity(pointerId: PointerId): Velocity
 }
 
-internal class FPointerChangeScopeImpl() : FPointerChangeScope {
+internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope {
     private val _downPointers = mutableMapOf<PointerId, PointerInputChange>()
     private val _downPointersVelocity = mutableMapOf<PointerId, VelocityTracker>()
 
@@ -107,9 +110,8 @@ internal class FPointerChangeScopeImpl() : FPointerChangeScope {
     }
 
     internal fun onStart() {
-        _downPointers.clear()
-        _downPointersVelocity.clear()
-        _maxDownPointerCount = 0
+        resetCancelFlag()
+        reset()
     }
 
     internal fun onDown(input: PointerInputChange) {
@@ -133,5 +135,16 @@ internal class FPointerChangeScopeImpl() : FPointerChangeScope {
         if (_enableVelocity) {
             _downPointersVelocity[input.id]?.addPosition(input.uptimeMillis, input.position)
         }
+    }
+
+    override fun cancelGesture() {
+        super.cancelGesture()
+        reset()
+    }
+
+    private fun reset() {
+        _downPointers.clear()
+        _downPointersVelocity.clear()
+        _maxDownPointerCount = 0
     }
 }
