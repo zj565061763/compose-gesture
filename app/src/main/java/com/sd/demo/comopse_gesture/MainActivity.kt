@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChangeIgnoreConsumed
 import androidx.compose.ui.tooling.preview.Preview
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -130,18 +131,19 @@ private fun SampleOnPointerChangeInPager(
                         logMsg { "onPointerChange onStart" }
                     },
                     onDown = {
-                        logMsg { "onPointerChange onDown count:$downPointerCount" }
+                        logMsg { "onPointerChange onDown isConsumed:${it.isConsumed}" }
                     },
                     onUp = {
-                        logMsg { "onPointerChange onUp count:$downPointerCount" }
+                        logMsg { "onPointerChange onUp isConsumed:${it.isConsumed}" }
                     },
                     onMove = {
-                        logMsg { "onPointerChange onMove" }
+                        val dragAmount = it.positionChangeIgnoreConsumed()
+                        logMsg { "onPointerChange onMove $dragAmount isConsumed:${it.isConsumed}" }
                     },
                     onFinish = {
                         logMsg { "onPointerChange onFinish maxCount:$maxDownPointerCount" }
                     },
-                ),
+                )
         ) {
             Text(text = it.toString())
         }
