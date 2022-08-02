@@ -19,7 +19,7 @@ import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fConsume
 import com.sd.lib.compose.gesture.fOnScale
 
-class SampleOnScaleActivity : ComponentActivity() {
+class SampleScaleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -44,7 +44,11 @@ fun SampleScale(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
-            .fOnScale { event, centroid, change ->
+            .fOnScale(
+                onFinish = {
+                    logMsg { "scale onFinish" }
+                }
+            ) { event, centroid, change ->
                 logMsg { "scale centroid:$centroid change:$change" }
                 scale *= change
                 event.fConsume()

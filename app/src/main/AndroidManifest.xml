@@ -42,7 +42,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".SampleOnScaleActivity"
+            android:name=".SampleScaleActivity"
             android:exported="false" />
 
         <activity
