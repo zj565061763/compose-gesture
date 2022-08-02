@@ -63,6 +63,18 @@ internal fun PointerInputChange.positionChanged(requireUnconsumed: Boolean): Boo
     return if (requireUnconsumed) positionChanged() else positionChangedIgnoreConsumed()
 }
 
+interface FGestureScope {
+    fun cancelGesture()
+}
+
+internal open class BaseGestureScope : FDragGestureScope {
+    internal var isGestureCanceled = false
+
+    override fun cancelGesture() {
+        isGestureCanceled = true
+    }
+}
+
 internal inline fun logMsg(block: () -> Any) {
     val msg = block().toString()
     Log.i("FComposeGesture", msg)

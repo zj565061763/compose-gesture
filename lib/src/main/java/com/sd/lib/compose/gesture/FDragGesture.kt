@@ -3,48 +3,64 @@ package com.sd.lib.compose.gesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.forEachGesture
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 
 fun Modifier.fOnDrag(
     onFinish: (() -> Unit)? = null,
-    onDrag: (event: PointerEvent, change: Offset) -> Unit,
-) = pointerInput(Unit) {
-    forEachGesture {
-        awaitPointerEventScope {
-            val touchSlop = viewConfiguration.touchSlop
-            var pastTouchSlop = false
-            var pan = Offset.Zero
-            var hasDrag = false
+    onDrag: FDragGestureScope.(event: PointerEvent, change: Offset) -> Unit,
+) = composed {
 
-            awaitFirstDown(requireUnconsumed = false)
-            while (true) {
-                val event = awaitPointerEvent()
+    val scopeImpl = remember { FDragGestureScopeImpl() }
 
-                if (!event.fHasPointerDown() || event.fHasConsumed()) {
-                    if (hasDrag) onFinish?.invoke()
-                    break
-                }
+    pointerInput(Unit) {
+        forEachGesture {
+            awaitPointerEventScope {
+                val touchSlop = viewConfiguration.touchSlop
+                var pastTouchSlop = false
+                var pan = Offset.Zero
+                var hasDrag = false
 
-                val panChange = event.calculatePan()
-                if (!pastTouchSlop) {
-                    pan += panChange
+                scopeImpl.isGestureCanceled = false
+                awaitFirstDown(requireUnconsumed = false)
 
-                    val panMotion = pan.getDistance()
-                    if (panMotion > touchSlop) {
-                        pastTouchSlop = true
+                while (!scopeImpl.isGestureCanceled) {
+                    val event = awaitPointerEvent(pass = PointerEventPass.Main)
+
+                    if (!event.fHasPointerDown() || event.fHasConsumed()) {
+                        if (hasDrag) onFinish?.invoke()
+                        break
                     }
-                }
 
-                if (pastTouchSlop) {
-                    if (panChange != Offset.Zero) {
-                        hasDrag = true
-                        onDrag(event, panChange)
+                    val panChange = event.calculatePan()
+                    if (!pastTouchSlop) {
+                        pan += panChange
+
+                        val panMotion = pan.getDistance()
+                        if (panMotion > touchSlop) {
+                            pastTouchSlop = true
+                        }
+                    }
+
+                    if (pastTouchSlop) {
+                        if (panChange != Offset.Zero) {
+                            hasDrag = true
+                            scopeImpl.onDrag(event, panChange)
+                        }
                     }
                 }
             }
         }
     }
+}
+
+interface FDragGestureScope : FGestureScope {
+}
+
+private class FDragGestureScopeImpl : BaseGestureScope(), FDragGestureScope {
 }
