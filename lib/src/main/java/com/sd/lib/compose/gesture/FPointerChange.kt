@@ -1,10 +1,12 @@
 package com.sd.lib.compose.gesture
 
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
@@ -27,6 +29,10 @@ fun Modifier.fOnPointerChange(
     pointerInput(Unit) {
         forEachGesture {
             awaitPointerEventScope {
+                val touchSlop = viewConfiguration.touchSlop
+                var pastTouchSlop = false
+                var pan = Offset.Zero
+
                 val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
 
                 scopeImpl.onStart()
@@ -47,8 +53,16 @@ fun Modifier.fOnPointerChange(
                             onUp?.invoke(scopeImpl, it)
                         } else if (it.positionChanged(requireUnconsumedUp)) {
                             if (hasDown) {
-                                scopeImpl.onMove(it)
-                                onMove?.invoke(scopeImpl, it)
+                                if (!pastTouchSlop) {
+                                    pan += event.calculatePan()
+                                    if (pan.getDistance() > touchSlop) {
+                                        pastTouchSlop = true
+                                    }
+                                }
+                                if (pastTouchSlop) {
+                                    scopeImpl.onMove(it)
+                                    onMove?.invoke(scopeImpl, it)
+                                }
                             }
                         }
                     }
