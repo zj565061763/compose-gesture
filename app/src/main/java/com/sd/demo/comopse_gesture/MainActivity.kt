@@ -88,10 +88,8 @@ private fun SampleAwait(
 @Composable
 private fun SampleOnPointerChange(
     modifier: Modifier = Modifier,
-    text: String = "",
 ) {
     Box(
-        contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
             .fOnPointerChange(
@@ -111,9 +109,7 @@ private fun SampleOnPointerChange(
                     logMsg { "onPointerChange onFinish maxCount:$maxDownPointerCount" }
                 },
             )
-    ) {
-        Text(text = text)
-    }
+    )
 }
 
 @OptIn(ExperimentalPagerApi::class)
@@ -121,8 +117,34 @@ private fun SampleOnPointerChange(
 private fun SampleOnPointerChangeInPager(
     modifier: Modifier = Modifier,
 ) {
-    HorizontalPager(count = 10, modifier = modifier.fillMaxSize()) {
-        SampleOnPointerChange(text = it.toString())
+    HorizontalPager(
+        count = 10,
+        modifier = modifier.fillMaxSize(),
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = modifier
+                .fillMaxSize()
+                .fOnPointerChange(
+                    onStart = {
+                        logMsg { "onPointerChange onStart" }
+                    },
+                    onDown = {
+                        logMsg { "onPointerChange onDown count:$downPointerCount" }
+                    },
+                    onUp = {
+                        logMsg { "onPointerChange onUp count:$downPointerCount" }
+                    },
+                    onMove = {
+                        logMsg { "onPointerChange onMove" }
+                    },
+                    onFinish = {
+                        logMsg { "onPointerChange onFinish maxCount:$maxDownPointerCount" }
+                    },
+                ),
+        ) {
+            Text(text = it.toString())
+        }
     }
 }
 
