@@ -71,7 +71,7 @@ interface FGestureScope {
     fun cancelGesture()
 }
 
-internal open class BaseGestureScope : FDragGestureScope {
+internal open class BaseGestureScope : FGestureScope {
     internal var isGestureCanceled = false
         private set
 
