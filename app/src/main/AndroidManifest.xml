@@ -46,6 +46,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".SampleOnDragActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".SampleVelocityTrackerActivity"
             android:exported="false" />
 

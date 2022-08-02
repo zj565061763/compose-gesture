@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
                         SampleButton(clazz = SampleOnPointerChangeActivity::class.java)
                         SampleButton(clazz = SampleOnPointerChangeInPagerActivity::class.java)
                         SampleButton(clazz = SampleOnScaleActivity::class.java)
+                        SampleButton(clazz = SampleOnDragActivity::class.java)
                         SampleButton(clazz = SampleVelocityTrackerActivity::class.java)
                     }
                 }
