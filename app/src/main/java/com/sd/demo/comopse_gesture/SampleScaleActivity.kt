@@ -28,7 +28,7 @@ class SampleOnScaleActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleOnScale()
+                    SampleScale()
                 }
             }
         }
@@ -36,7 +36,7 @@ class SampleOnScaleActivity : ComponentActivity() {
 }
 
 @Composable
-fun SampleOnScale(
+fun SampleScale(
     modifier: Modifier = Modifier,
 ) {
     var scale by remember { mutableStateOf(1f) }

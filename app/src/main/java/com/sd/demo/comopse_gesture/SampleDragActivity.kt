@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fOnPointerChange
 
-class SampleOnDragActivity : ComponentActivity() {
+class SampleDragActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -29,7 +29,7 @@ class SampleOnDragActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleOnDrag()
+                    SampleDrag()
                 }
             }
         }
@@ -37,7 +37,7 @@ class SampleOnDragActivity : ComponentActivity() {
 }
 
 @Composable
-fun SampleOnDrag(
+fun SampleDrag(
     modifier: Modifier = Modifier,
 ) {
     var offset by remember { mutableStateOf(Offset.Zero) }

@@ -35,10 +35,10 @@ class MainActivity : ComponentActivity() {
                     ) {
                         SampleButton(clazz = SampleAwaitActivity::class.java)
                         SampleButton(clazz = SampleClickActivity::class.java)
-                        SampleButton(clazz = SampleOnPointerChangeActivity::class.java)
-                        SampleButton(clazz = SampleOnPointerChangeInPagerActivity::class.java)
+                        SampleButton(clazz = SamplePointerChangeActivity::class.java)
+                        SampleButton(clazz = SamplePointerChangeInPagerActivity::class.java)
                         SampleButton(clazz = SampleOnScaleActivity::class.java)
-                        SampleButton(clazz = SampleOnDragActivity::class.java)
+                        SampleButton(clazz = SampleDragActivity::class.java)
                         SampleButton(clazz = SampleVelocityTrackerActivity::class.java)
                     }
                 }

@@ -34,11 +34,11 @@
             android:exported="false" />
 
         <activity
-            android:name=".SampleOnPointerChangeActivity"
+            android:name=".SamplePointerChangeActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SampleOnPointerChangeInPagerActivity"
+            android:name=".SamplePointerChangeInPagerActivity"
             android:exported="false" />
 
         <activity
@@ -46,7 +46,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".SampleOnDragActivity"
+            android:name=".SampleDragActivity"
             android:exported="false" />
 
         <activity

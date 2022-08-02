@@ -21,7 +21,7 @@ class SampleClickActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleOnClick()
+                    SampleClick()
                 }
             }
         }
@@ -29,7 +29,7 @@ class SampleClickActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SampleOnClick(
+private fun SampleClick(
     modifier: Modifier = Modifier,
 ) {
     Box(

@@ -17,7 +17,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fOnPointerChange
 
-class SampleOnPointerChangeInPagerActivity : ComponentActivity() {
+class SamplePointerChangeInPagerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -26,7 +26,7 @@ class SampleOnPointerChangeInPagerActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleOnPointerChangeInPager()
+                    SamplePointerChangeInPager()
                 }
             }
         }
@@ -35,7 +35,7 @@ class SampleOnPointerChangeInPagerActivity : ComponentActivity() {
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-private fun SampleOnPointerChangeInPager(
+private fun SamplePointerChangeInPager(
     modifier: Modifier = Modifier,
 ) {
     HorizontalPager(

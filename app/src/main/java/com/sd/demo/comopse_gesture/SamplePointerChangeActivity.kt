@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fOnPointerChange
 
-class SampleOnPointerChangeActivity : ComponentActivity() {
+class SamplePointerChangeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -21,7 +21,7 @@ class SampleOnPointerChangeActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleOnPointerChange()
+                    SamplePointerChange()
                 }
             }
         }
@@ -29,7 +29,7 @@ class SampleOnPointerChangeActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SampleOnPointerChange(
+private fun SamplePointerChange(
     modifier: Modifier = Modifier,
 ) {
     Box(
