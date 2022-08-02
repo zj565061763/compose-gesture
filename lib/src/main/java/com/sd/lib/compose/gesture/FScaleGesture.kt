@@ -35,6 +35,7 @@ fun Modifier.fOnScale(
                     val centroid = event.calculateCentroid(useCurrent = false)
                     if (zoomChange != 1f) {
                         onScale(centroid, zoomChange)
+                        event.fConsume()
                     }
                 }
             }
