@@ -19,6 +19,7 @@ fun Modifier.fOnScale(
             while (true) {
                 val event = awaitPointerEvent()
                 if (!event.fHasPointerDown()) break
+                if (event.fHasConsumed()) break
 
                 val zoomChange = event.calculateZoom()
                 if (!pastTouchSlop) {
