@@ -7,7 +7,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import kotlin.math.abs
 
 fun Modifier.fOnScale(
-    onScale: (centroid: Offset, zoomChange: Float) -> Unit,
+    onScale: (centroid: Offset, change: Float) -> Unit,
 ) = pointerInput(Unit) {
     forEachGesture {
         awaitPointerEventScope {

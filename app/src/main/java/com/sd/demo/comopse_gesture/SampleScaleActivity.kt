@@ -43,9 +43,9 @@ fun SampleOnScale(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
-            .fOnScale { centroid, zoomChange ->
-                logMsg { "scale centroid:$centroid zoomChange:$zoomChange" }
-                scale *= zoomChange
+            .fOnScale { centroid, change ->
+                logMsg { "scale centroid:$centroid change:$change" }
+                scale *= change
             }
     ) {
         Image(
