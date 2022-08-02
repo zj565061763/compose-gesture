@@ -37,19 +37,19 @@ private fun SamplePointerChange(
             .fillMaxSize()
             .fPointerChange(
                 onStart = {
-                    logMsg { "onPointerChange onStart" }
+                    logMsg { "PointerChange onStart" }
                 },
                 onDown = {
-                    logMsg { "onPointerChange onDown count:$downPointerCount" }
+                    logMsg { "PointerChange onDown count:$downPointerCount" }
                 },
                 onUp = {
-                    logMsg { "onPointerChange onUp count:$downPointerCount" }
+                    logMsg { "PointerChange onUp count:$downPointerCount" }
                 },
                 onMove = {
-                    logMsg { "onPointerChange onMove" }
+                    logMsg { "PointerChange onMove" }
                 },
                 onFinish = {
-                    logMsg { "onPointerChange onFinish maxCount:$maxDownPointerCount" }
+                    logMsg { "PointerChange onFinish maxCount:$maxDownPointerCount" }
                 },
             )
     )

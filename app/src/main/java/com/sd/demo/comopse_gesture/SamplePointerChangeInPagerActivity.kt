@@ -48,21 +48,21 @@ private fun SamplePointerChangeInPager(
                 .fillMaxSize()
                 .fPointerChange(
                     onStart = {
-                        logMsg { "onPointerChange onStart" }
+                        logMsg { "PointerChange onStart" }
                     },
                     onDown = {
-                        logMsg { "onPointerChange onDown isConsumed:${it.isConsumed}" }
+                        logMsg { "PointerChange onDown isConsumed:${it.isConsumed}" }
                     },
                     onUp = {
-                        logMsg { "onPointerChange onUp isConsumed:${it.isConsumed}" }
+                        logMsg { "PointerChange onUp isConsumed:${it.isConsumed}" }
                     },
                     onMove = {
                         val dragAmount = it.positionChangeIgnoreConsumed()
-                        logMsg { "onPointerChange onMove $dragAmount isConsumed:${it.isConsumed}" }
+                        logMsg { "PointerChange onMove $dragAmount isConsumed:${it.isConsumed}" }
 //                        it.consume()
                     },
                     onFinish = {
-                        logMsg { "onPointerChange onFinish maxCount:$maxDownPointerCount" }
+                        logMsg { "PointerChange onFinish maxCount:$maxDownPointerCount" }
                     },
                 )
         ) {
