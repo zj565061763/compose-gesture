@@ -10,8 +10,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import kotlin.math.abs
 
 fun Modifier.fOnScale(
-    onFinish: (() -> Unit)? = null,
-    onScale: (event: PointerEvent, centroid: Offset, change: Float) -> Unit,
+    onFinish: (FScaleGestureScope.() -> Unit)? = null,
+    onScale: FScaleGestureScope.(event: PointerEvent, centroid: Offset, change: Float) -> Unit,
 ) = composed {
 
     val scopeImpl = remember { FScaleGestureScopeImpl() }
@@ -32,7 +32,7 @@ fun Modifier.fOnScale(
 
                     if (hasScale) {
                         if (event.fHasConsumed() || event.fDownPointerCount() < 2) {
-                            onFinish?.invoke()
+                            onFinish?.invoke(scopeImpl)
                             break
                         }
                     }
@@ -52,7 +52,7 @@ fun Modifier.fOnScale(
                         val centroid = event.calculateCentroid(useCurrent = false)
                         if (zoomChange != 1f) {
                             hasScale = true
-                            onScale(event, centroid, zoomChange)
+                            scopeImpl.onScale(event, centroid, zoomChange)
                         }
                     }
                 }

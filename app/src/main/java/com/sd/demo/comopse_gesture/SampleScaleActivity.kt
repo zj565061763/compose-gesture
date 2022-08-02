@@ -52,6 +52,10 @@ fun SampleScale(
                 logMsg { "scale centroid:$centroid change:$change" }
                 scale *= change
                 event.fConsume()
+
+                if (scale < 0.3f && change < 1f) {
+                    cancelGesture()
+                }
             }
     ) {
         Image(
