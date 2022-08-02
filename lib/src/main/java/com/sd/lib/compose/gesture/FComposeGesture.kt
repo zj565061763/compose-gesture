@@ -27,6 +27,10 @@ suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
 
 fun PointerEvent.fHasPointerDown(): Boolean = changes.any { it.pressed }
 
+fun PointerEvent.fDownPointerCount(): Int = changes.fold(0) { acc, input ->
+    acc + (if (input.pressed) 1 else 0)
+}
+
 fun PointerEvent.fHasConsumed(): Boolean = changes.any { it.isConsumed }
 
 fun PointerEvent.fConsume(): Boolean {

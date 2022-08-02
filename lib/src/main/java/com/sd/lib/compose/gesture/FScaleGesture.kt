@@ -1,45 +1,68 @@
 package com.sd.lib.compose.gesture
 
 import androidx.compose.foundation.gestures.*
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import kotlin.math.abs
 
 fun Modifier.fOnScale(
-    onScale: (centroid: Offset, change: Float) -> Unit,
-) = pointerInput(Unit) {
-    forEachGesture {
-        awaitPointerEventScope {
-            val touchSlop = viewConfiguration.touchSlop
-            var pastTouchSlop = false
-            var zoom = 1f
+    onFinish: (() -> Unit)? = null,
+    onScale: (event: PointerEvent, centroid: Offset, change: Float) -> Unit,
+) = composed {
 
-            awaitFirstDown(requireUnconsumed = false)
-            while (true) {
-                val event = awaitPointerEvent()
-                if (!event.fHasPointerDown()) break
-                if (event.fHasConsumed()) break
+    val scopeImpl = remember { FScaleGestureScopeImpl() }
 
-                val zoomChange = event.calculateZoom()
-                if (!pastTouchSlop) {
-                    zoom *= zoomChange
+    pointerInput(Unit) {
+        forEachGesture {
+            awaitPointerEventScope {
+                val touchSlop = viewConfiguration.touchSlop
+                var pastTouchSlop = false
+                var zoom = 1f
+                var hasScale = false
 
-                    val centroidSize = event.calculateCentroidSize(useCurrent = false)
-                    val zoomMotion = abs(1 - zoom) * centroidSize
-                    if (zoomMotion > touchSlop) {
-                        pastTouchSlop = true
+                scopeImpl.resetCancelFlag()
+                awaitFirstDown(requireUnconsumed = false)
+
+                while (!scopeImpl.isGestureCanceled) {
+                    val event = awaitPointerEvent()
+
+                    if (hasScale) {
+                        if (event.fHasConsumed() || event.fDownPointerCount() < 2) {
+                            onFinish?.invoke()
+                            break
+                        }
                     }
-                }
 
-                if (pastTouchSlop) {
-                    val centroid = event.calculateCentroid(useCurrent = false)
-                    if (zoomChange != 1f) {
-                        onScale(centroid, zoomChange)
-                        event.fConsume()
+                    val zoomChange = event.calculateZoom()
+                    if (!pastTouchSlop) {
+                        zoom *= zoomChange
+
+                        val centroidSize = event.calculateCentroidSize(useCurrent = false)
+                        val zoomMotion = abs(1 - zoom) * centroidSize
+                        if (zoomMotion > touchSlop) {
+                            pastTouchSlop = true
+                        }
+                    }
+
+                    if (pastTouchSlop) {
+                        val centroid = event.calculateCentroid(useCurrent = false)
+                        if (zoomChange != 1f) {
+                            hasScale = true
+                            onScale(event, centroid, zoomChange)
+                        }
                     }
                 }
             }
         }
     }
+}
+
+interface FScaleGestureScope : FGestureScope {
+}
+
+private class FScaleGestureScopeImpl : BaseGestureScope(), FScaleGestureScope {
 }

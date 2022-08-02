@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
+import com.sd.lib.compose.gesture.fConsume
 import com.sd.lib.compose.gesture.fOnScale
 
 class SampleOnScaleActivity : ComponentActivity() {
@@ -43,9 +44,10 @@ fun SampleOnScale(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
-            .fOnScale { centroid, change ->
+            .fOnScale { event, centroid, change ->
                 logMsg { "scale centroid:$centroid change:$change" }
                 scale *= change
+                event.fConsume()
             }
     ) {
         Image(
