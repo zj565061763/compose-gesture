@@ -27,6 +27,8 @@ suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
 
 fun PointerEvent.fHasPointerDown(): Boolean = changes.any { it.pressed }
 
+fun PointerEvent.fHasConsumed(): Boolean = changes.any { it.isConsumed }
+
 private fun PointerEvent.fillDownMap(
     requireUnconsumed: Boolean,
     map: MutableMap<PointerId, PointerInputChange>,
