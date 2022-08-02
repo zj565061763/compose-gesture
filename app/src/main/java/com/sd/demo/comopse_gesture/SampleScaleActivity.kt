@@ -17,7 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fConsume
-import com.sd.lib.compose.gesture.fOnScale
+import com.sd.lib.compose.gesture.fScaleGesture
 
 class SampleScaleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +44,7 @@ fun SampleScale(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
-            .fOnScale(
+            .fScaleGesture(
                 onFinish = {
                     logMsg { "scale onFinish" }
                 }

@@ -9,7 +9,7 @@ import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import kotlin.math.abs
 
-fun Modifier.fOnScale(
+fun Modifier.fScaleGesture(
     onFinish: (FScaleGestureScope.() -> Unit)? = null,
     onScale: FScaleGestureScope.(event: PointerEvent, centroid: Offset, change: Float) -> Unit,
 ) = composed {
