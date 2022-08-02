@@ -35,7 +35,7 @@ class SampleOnScaleActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SampleOnScale(
+fun SampleOnScale(
     modifier: Modifier = Modifier,
 ) {
     var scale by remember { mutableStateOf(1f) }
