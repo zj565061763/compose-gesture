@@ -29,6 +29,15 @@ fun PointerEvent.fHasPointerDown(): Boolean = changes.any { it.pressed }
 
 fun PointerEvent.fHasConsumed(): Boolean = changes.any { it.isConsumed }
 
+fun PointerEvent.fConsume(): Boolean {
+    var consume = false
+    changes.forEach {
+        if (!it.isConsumed) consume = true
+        it.consume()
+    }
+    return consume
+}
+
 private fun PointerEvent.fillDownMap(
     requireUnconsumed: Boolean,
     map: MutableMap<PointerId, PointerInputChange>,
