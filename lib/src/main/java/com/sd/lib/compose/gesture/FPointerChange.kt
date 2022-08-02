@@ -14,9 +14,7 @@ import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.Velocity
 
 fun Modifier.fOnPointerChange(
-    requireUnconsumedDown: Boolean = true,
     requireUnconsumedMove: Boolean = true,
-    requireUnconsumedUp: Boolean = true,
     onStart: (FPointerChangeScope.() -> Unit)? = null,
     onDown: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
     onUp: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
@@ -33,7 +31,7 @@ fun Modifier.fOnPointerChange(
                 var pastTouchSlop = false
                 var pan = Offset.Zero
 
-                val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
+                val firstDown = awaitFirstDown(requireUnconsumed = false)
 
                 scopeImpl.onStart()
                 onStart?.invoke(scopeImpl)
@@ -45,13 +43,13 @@ fun Modifier.fOnPointerChange(
                     val event = awaitPointerEvent()
                     val hasDown = event.fHasPointerDown()
                     event.changes.forEach {
-                        if (it.changedToDown(requireUnconsumedDown)) {
+                        if (it.changedToDown(false)) {
                             scopeImpl.onDown(it)
                             onDown?.invoke(scopeImpl, it)
-                        } else if (it.changedToUp(requireUnconsumedMove)) {
+                        } else if (it.changedToUp(false)) {
                             scopeImpl.onUp(it)
                             onUp?.invoke(scopeImpl, it)
-                        } else if (it.positionChanged(requireUnconsumedUp)) {
+                        } else if (it.positionChanged(requireUnconsumedMove)) {
                             if (hasDown) {
                                 if (!pastTouchSlop) {
                                     pan += event.calculatePan()
