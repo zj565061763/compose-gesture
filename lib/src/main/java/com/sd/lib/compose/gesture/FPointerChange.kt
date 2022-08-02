@@ -41,7 +41,7 @@ fun Modifier.fOnPointerChange(
                 scopeImpl.onDown(firstDown)
                 onDown?.invoke(scopeImpl, firstDown)
 
-                while (true) {
+                do {
                     val event = awaitPointerEvent()
                     val hasDown = event.fHasPointerDown()
                     event.changes.forEach {
@@ -66,8 +66,7 @@ fun Modifier.fOnPointerChange(
                             }
                         }
                     }
-                    if (!hasDown) break
-                }
+                } while (hasDown)
 
                 onFinish?.invoke(scopeImpl)
             }
