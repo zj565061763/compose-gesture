@@ -13,7 +13,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.Velocity
 
-fun Modifier.fOnPointerChange(
+fun Modifier.fPointerChange(
     requireUnconsumedMove: Boolean = true,
     onStart: (FPointerChangeScope.() -> Unit)? = null,
     onDown: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,

@@ -10,7 +10,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
-import com.sd.lib.compose.gesture.fOnPointerChange
+import com.sd.lib.compose.gesture.fPointerChange
 
 class SampleVelocityTrackerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +35,7 @@ private fun SampleVelocityTracker(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .fOnPointerChange(
+            .fPointerChange(
                 onStart = {
                     enableVelocity = true
                 },

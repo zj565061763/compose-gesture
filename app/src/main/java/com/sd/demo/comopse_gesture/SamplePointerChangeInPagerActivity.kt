@@ -15,7 +15,7 @@ import androidx.compose.ui.input.pointer.positionChangeIgnoreConsumed
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
-import com.sd.lib.compose.gesture.fOnPointerChange
+import com.sd.lib.compose.gesture.fPointerChange
 
 class SamplePointerChangeInPagerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,7 +46,7 @@ private fun SamplePointerChangeInPager(
             contentAlignment = Alignment.Center,
             modifier = modifier
                 .fillMaxSize()
-                .fOnPointerChange(
+                .fPointerChange(
                     onStart = {
                         logMsg { "onPointerChange onStart" }
                     },

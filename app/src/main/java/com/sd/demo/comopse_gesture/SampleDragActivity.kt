@@ -18,7 +18,7 @@ import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
-import com.sd.lib.compose.gesture.fOnPointerChange
+import com.sd.lib.compose.gesture.fPointerChange
 
 class SampleDragActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +45,7 @@ fun SampleDrag(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
-            .fOnPointerChange(
+            .fPointerChange(
                 onMove = {
                     val change = it.positionChange()
                     logMsg { "drag event:${it.isConsumed} change:$change" }
