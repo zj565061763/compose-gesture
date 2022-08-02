@@ -12,7 +12,9 @@ import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.Velocity
 
 fun Modifier.fOnPointerChange(
-    requireUnconsumed: Boolean = true,
+    requireUnconsumedDown: Boolean = true,
+    requireUnconsumedMove: Boolean = true,
+    requireUnconsumedUp: Boolean = true,
     onStart: (FPointerChangeScope.() -> Unit)? = null,
     onDown: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
     onUp: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
@@ -25,7 +27,7 @@ fun Modifier.fOnPointerChange(
     pointerInput(Unit) {
         forEachGesture {
             awaitPointerEventScope {
-                val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumed)
+                val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
 
                 scopeImpl.onStart()
                 onStart?.invoke(scopeImpl)
@@ -37,13 +39,13 @@ fun Modifier.fOnPointerChange(
                     val event = awaitPointerEvent()
                     val hasDown = event.fHasPointerDown()
                     event.changes.forEach {
-                        if (it.changedToDown(requireUnconsumed)) {
+                        if (it.changedToDown(requireUnconsumedDown)) {
                             scopeImpl.onDown(it)
                             onDown?.invoke(scopeImpl, it)
-                        } else if (it.changedToUp(requireUnconsumed)) {
+                        } else if (it.changedToUp(requireUnconsumedMove)) {
                             scopeImpl.onUp(it)
                             onUp?.invoke(scopeImpl, it)
-                        } else if (it.positionChanged(requireUnconsumed)) {
+                        } else if (it.positionChanged(requireUnconsumedUp)) {
                             if (hasDown) {
                                 scopeImpl.onMove(it)
                                 onMove?.invoke(scopeImpl, it)
