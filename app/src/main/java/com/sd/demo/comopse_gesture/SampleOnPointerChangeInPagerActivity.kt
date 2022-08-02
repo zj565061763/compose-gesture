@@ -59,6 +59,7 @@ private fun SampleOnPointerChangeInPager(
                     onMove = {
                         val dragAmount = it.positionChangeIgnoreConsumed()
                         logMsg { "onPointerChange onMove $dragAmount isConsumed:${it.isConsumed}" }
+//                        it.consume()
                     },
                     onFinish = {
                         logMsg { "onPointerChange onFinish maxCount:$maxDownPointerCount" }
