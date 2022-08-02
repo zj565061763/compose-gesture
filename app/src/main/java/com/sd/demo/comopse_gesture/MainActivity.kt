@@ -11,9 +11,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
 import com.sd.lib.compose.gesture.fAwaitAllPointersUp
 import com.sd.lib.compose.gesture.fAwaitDowns
@@ -30,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleOnClick()
+                    SampleOnPointerChangeInPager()
                 }
             }
         }
@@ -85,8 +88,10 @@ private fun SampleAwait(
 @Composable
 private fun SampleOnPointerChange(
     modifier: Modifier = Modifier,
+    text: String = "",
 ) {
     Box(
+        contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
             .fOnPointerChange(
@@ -106,7 +111,19 @@ private fun SampleOnPointerChange(
                     logMsg { "onPointerChange onFinish maxCount:$maxDownPointerCount" }
                 },
             )
-    )
+    ) {
+        Text(text = text)
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun SampleOnPointerChangeInPager(
+    modifier: Modifier = Modifier,
+) {
+    HorizontalPager(count = 10, modifier = modifier.fillMaxSize()) {
+        SampleOnPointerChange(text = it.toString())
+    }
 }
 
 @Composable
