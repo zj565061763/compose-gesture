@@ -14,11 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
-import com.sd.lib.compose.gesture.fHasConsumed
-import com.sd.lib.compose.gesture.fOnDrag
+import com.sd.lib.compose.gesture.fOnPointerChange
 
 class SampleOnDragActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,10 +45,13 @@ fun SampleOnDrag(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
-            .fOnDrag { event, change ->
-                logMsg { "drag event:${event.fHasConsumed()} change:$change" }
-                offset += change
-            }
+            .fOnPointerChange(
+                onMove = {
+                    val change = it.positionChange()
+                    logMsg { "drag event:${it.isConsumed} change:$change" }
+                    offset += change
+                }
+            )
     ) {
         Image(
             painter = painterResource(id = R.drawable.scale),
