@@ -10,6 +10,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import kotlin.math.abs
 
 fun Modifier.fScaleGesture(
+    onStart: (FScaleGestureScope.() -> Unit)? = null,
     onFinish: (FScaleGestureScope.() -> Unit)? = null,
     onScale: FScaleGestureScope.(event: PointerEvent, centroid: Offset, change: Float) -> Unit,
 ) = composed {
@@ -51,6 +52,11 @@ fun Modifier.fScaleGesture(
                     if (pastTouchSlop) {
                         val centroid = event.calculateCentroid(useCurrent = false)
                         if (zoomChange != 1f) {
+                            if (!hasScale) {
+                                onStart?.invoke(scopeImpl)
+                                if (scopeImpl.isGestureCanceled) break
+                            }
+
                             hasScale = true
                             scopeImpl.onScale(event, centroid, zoomChange)
                         }

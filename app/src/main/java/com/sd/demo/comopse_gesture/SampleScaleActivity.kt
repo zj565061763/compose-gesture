@@ -45,6 +45,9 @@ fun SampleScale(
         modifier = modifier
             .fillMaxSize()
             .fScaleGesture(
+                onStart = {
+                    logMsg { "scale onStart" }
+                },
                 onFinish = {
                     logMsg { "scale onFinish" }
                 }
