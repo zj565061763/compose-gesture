@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointerChange
 
-class SampleVelocityTrackerActivity : ComponentActivity() {
+class SamplePointerChangeVelocityActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

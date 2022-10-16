@@ -49,7 +49,7 @@
             android:exported="false" />
 
         <activity
-            android:name="com.sd.demo.compose_gesture.SampleVelocityTrackerActivity"
+            android:name="com.sd.demo.compose_gesture.SamplePointerChangeVelocityActivity"
             android:exported="false" />
 
     </application>
