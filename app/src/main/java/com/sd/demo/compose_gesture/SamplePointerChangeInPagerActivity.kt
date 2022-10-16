@@ -1,4 +1,4 @@
-package com.sd.demo.comopse_gesture
+package com.sd.demo.compose_gesture
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.positionChangeIgnoreConsumed
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.sd.demo.comopse_gesture.ui.theme.AppTheme
+import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointerChange
 
 class SamplePointerChangeInPagerActivity : ComponentActivity() {

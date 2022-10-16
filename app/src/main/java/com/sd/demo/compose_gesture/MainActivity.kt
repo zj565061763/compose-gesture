@@ -1,4 +1,4 @@
-package com.sd.demo.comopse_gesture
+package com.sd.demo.compose_gesture
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,7 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.sd.demo.comopse_gesture.ui.theme.AppTheme
+import com.sd.demo.compose_gesture.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

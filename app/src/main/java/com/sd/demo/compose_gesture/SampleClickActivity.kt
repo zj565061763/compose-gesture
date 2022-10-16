@@ -1,4 +1,4 @@
-package com.sd.demo.comopse_gesture
+package com.sd.demo.compose_gesture
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,10 +9,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.sd.demo.comopse_gesture.ui.theme.AppTheme
-import com.sd.lib.compose.gesture.fPointerChange
+import com.sd.demo.compose_gesture.ui.theme.AppTheme
+import com.sd.lib.compose.gesture.fClick
 
-class SamplePointerChangeActivity : ComponentActivity() {
+class SampleClickActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -21,7 +21,7 @@ class SamplePointerChangeActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SamplePointerChange()
+                    SampleClick()
                 }
             }
         }
@@ -29,28 +29,25 @@ class SamplePointerChangeActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SamplePointerChange(
+private fun SampleClick(
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .fPointerChange(
-                onStart = {
-                    logMsg { "PointerChange onStart" }
+            .fClick(
+                onPress = {
+                    logMsg { "onPress" }
                 },
-                onDown = {
-                    logMsg { "PointerChange onDown count:$downPointerCount" }
+                onDoubleTap = {
+                    logMsg { "onDoubleTap" }
                 },
-                onUp = {
-                    logMsg { "PointerChange onUp count:$downPointerCount" }
+                onLongPress = {
+                    logMsg { "onLongPress" }
                 },
-                onMove = {
-                    logMsg { "PointerChange onMove" }
-                },
-                onFinish = {
-                    logMsg { "PointerChange onFinish maxCount:$maxDownPointerCount" }
-                },
+                onTap = {
+                    logMsg { "onTap" }
+                }
             )
     )
 }

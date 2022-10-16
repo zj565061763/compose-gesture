@@ -1,4 +1,4 @@
-package com.sd.demo.comopse_gesture.ui.theme
+package com.sd.demo.compose_gesture.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

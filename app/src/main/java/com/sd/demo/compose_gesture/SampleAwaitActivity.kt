@@ -1,18 +1,21 @@
-package com.sd.demo.comopse_gesture
+package com.sd.demo.compose_gesture
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.sd.demo.comopse_gesture.ui.theme.AppTheme
-import com.sd.lib.compose.gesture.fPointerChange
+import androidx.compose.ui.input.pointer.pointerInput
+import com.sd.demo.compose_gesture.ui.theme.AppTheme
+import com.sd.lib.compose.gesture.fAwaitAllPointersUp
+import com.sd.lib.compose.gesture.fAwaitDowns
 
-class SampleVelocityTrackerActivity : ComponentActivity() {
+class SampleAwaitActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -21,7 +24,7 @@ class SampleVelocityTrackerActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleVelocityTracker()
+                    SampleAwait()
                 }
             }
         }
@@ -29,19 +32,22 @@ class SampleVelocityTrackerActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SampleVelocityTracker(
+private fun SampleAwait(
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .fPointerChange(
-                onStart = {
-                    enableVelocity = true
-                },
-                onUp = {
-                    logMsg { "onUp ${it.id} ${getPointerVelocity(it.id)}" }
-                },
-            )
+            .pointerInput(Unit) {
+                forEachGesture {
+                    awaitPointerEventScope {
+                        fAwaitDowns(count = 2)
+                        logMsg { "fAwaitDowns" }
+
+                        fAwaitAllPointersUp()
+                        logMsg { "fAwaitAllPointersUp" }
+                    }
+                }
+            }
     )
 }

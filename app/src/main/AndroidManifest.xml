@@ -13,7 +13,7 @@
         android:theme="@style/Theme.Comopsegesture"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="com.sd.demo.compose_gesture.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Comopsegesture">
@@ -25,31 +25,31 @@
         </activity>
 
         <activity
-            android:name=".SampleClickActivity"
+            android:name="com.sd.demo.compose_gesture.SampleClickActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SampleAwaitActivity"
+            android:name="com.sd.demo.compose_gesture.SampleAwaitActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SamplePointerChangeActivity"
+            android:name="com.sd.demo.compose_gesture.SamplePointerChangeActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SamplePointerChangeInPagerActivity"
+            android:name="com.sd.demo.compose_gesture.SamplePointerChangeInPagerActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SampleScaleActivity"
+            android:name="com.sd.demo.compose_gesture.SampleScaleActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SampleDragActivity"
+            android:name="com.sd.demo.compose_gesture.SampleDragActivity"
             android:exported="false" />
 
         <activity
-            android:name=".SampleVelocityTrackerActivity"
+            android:name="com.sd.demo.compose_gesture.SampleVelocityTrackerActivity"
             android:exported="false" />
 
     </application>

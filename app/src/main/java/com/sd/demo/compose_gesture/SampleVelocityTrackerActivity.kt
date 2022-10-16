@@ -1,4 +1,4 @@
-package com.sd.demo.comopse_gesture
+package com.sd.demo.compose_gesture
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,10 +9,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.sd.demo.comopse_gesture.ui.theme.AppTheme
-import com.sd.lib.compose.gesture.fClick
+import com.sd.demo.compose_gesture.ui.theme.AppTheme
+import com.sd.lib.compose.gesture.fPointerChange
 
-class SampleClickActivity : ComponentActivity() {
+class SampleVelocityTrackerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -21,7 +21,7 @@ class SampleClickActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    SampleClick()
+                    SampleVelocityTracker()
                 }
             }
         }
@@ -29,25 +29,19 @@ class SampleClickActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SampleClick(
+private fun SampleVelocityTracker(
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .fClick(
-                onPress = {
-                    logMsg { "onPress" }
+            .fPointerChange(
+                onStart = {
+                    enableVelocity = true
                 },
-                onDoubleTap = {
-                    logMsg { "onDoubleTap" }
+                onUp = {
+                    logMsg { "onUp ${it.id} ${getPointerVelocity(it.id)}" }
                 },
-                onLongPress = {
-                    logMsg { "onLongPress" }
-                },
-                onTap = {
-                    logMsg { "onTap" }
-                }
             )
     )
 }
