@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
+import com.sd.demo.comopse_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fConsume
 import com.sd.lib.compose.gesture.fScaleGesture
 
@@ -23,7 +23,7 @@ class SampleScaleActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ComopsegestureTheme {
+            AppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background

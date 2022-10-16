@@ -17,14 +17,14 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.sd.demo.comopse_gesture.ui.theme.ComopsegestureTheme
+import com.sd.demo.comopse_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointerChange
 
 class SampleDragActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ComopsegestureTheme {
+            AppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
