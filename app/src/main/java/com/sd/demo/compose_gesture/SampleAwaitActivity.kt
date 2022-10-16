@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fAwaitAllPointersUp
-import com.sd.lib.compose.gesture.fAwaitDowns
+import com.sd.lib.compose.gesture.fAwaitDown
 
 class SampleAwaitActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +41,7 @@ private fun SampleAwait(
             .pointerInput(Unit) {
                 forEachGesture {
                     awaitPointerEventScope {
-                        fAwaitDowns(count = 2)
+                        fAwaitDown(2)
                         logMsg { "fAwaitDowns" }
 
                         fAwaitAllPointersUp()

@@ -3,18 +3,24 @@ package com.sd.lib.compose.gesture
 import android.util.Log
 import androidx.compose.ui.input.pointer.*
 
-suspend fun AwaitPointerEventScope.fAwaitDowns(
-    count: Int = 2,
+suspend fun AwaitPointerEventScope.fAwaitDown(
+    count: Int = 1,
     requireUnconsumed: Boolean = true,
     pass: PointerEventPass = PointerEventPass.Main,
 ): List<PointerInputChange> {
-    require(count > 1)
-    val pointerHolder = mutableMapOf<PointerId, PointerInputChange>()
-    while (pointerHolder.size < count) {
+    require(count > 0)
+    val map = mutableMapOf<PointerId, PointerInputChange>()
+    while (map.size < count) {
         val event = awaitPointerEvent(pass = pass)
-        event.fillDownMap(requireUnconsumed = requireUnconsumed, map = pointerHolder)
+        event.changes.forEach {
+            if (it.changedToDown(requireUnconsumed)) {
+                map[it.id] = it
+            } else if (it.changedToUp(requireUnconsumed)) {
+                map.remove(it.id)
+            }
+        }
     }
-    return pointerHolder.values.toList()
+    return map.values.toList()
 }
 
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
@@ -40,19 +46,6 @@ fun PointerEvent.fConsume(): Boolean {
         it.consume()
     }
     return consume
-}
-
-private fun PointerEvent.fillDownMap(
-    requireUnconsumed: Boolean,
-    map: MutableMap<PointerId, PointerInputChange>,
-) {
-    changes.forEach {
-        if (it.changedToDown(requireUnconsumed)) {
-            map[it.id] = it
-        } else if (it.changedToUp(requireUnconsumed)) {
-            map.remove(it.id)
-        }
-    }
 }
 
 internal fun PointerInputChange.changedToDown(requireUnconsumed: Boolean): Boolean {
