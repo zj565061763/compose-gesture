@@ -43,7 +43,7 @@ fun Modifier.fPointerChange(
 
                 do {
                     val event = awaitPointerEvent()
-                    val hasDown = event.fHasPointerDown()
+                    val hasDown = event.fHasDownPointer()
                     event.changes.forEach {
                         if (it.changedToDown(false)) {
                             scopeImpl.onDown(it)

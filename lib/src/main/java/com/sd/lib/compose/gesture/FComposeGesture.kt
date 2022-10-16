@@ -18,14 +18,14 @@ suspend fun AwaitPointerEventScope.fAwaitDowns(
 }
 
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
-    if (currentEvent.fHasPointerDown()) {
+    if (currentEvent.fHasDownPointer()) {
         do {
             val event = awaitPointerEvent(PointerEventPass.Final)
-        } while (event.fHasPointerDown())
+        } while (event.fHasDownPointer())
     }
 }
 
-fun PointerEvent.fHasPointerDown(): Boolean = changes.any { it.pressed }
+fun PointerEvent.fHasDownPointer(): Boolean = changes.any { it.pressed }
 
 fun PointerEvent.fDownPointerCount(): Int = changes.fold(0) { acc, input ->
     acc + (if (input.pressed) 1 else 0)
