@@ -98,11 +98,7 @@ internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope
     override val maxDownPointerCount: Int
         get() = _maxDownPointerCount
 
-    override var enableVelocity: Boolean
-        get() = _enableVelocity
-        set(value) {
-            _enableVelocity = value
-        }
+    override var enableVelocity: Boolean by ::_enableVelocity
 
     override fun getPointerVelocity(pointerId: PointerId): Velocity {
         val velocityTracker = _downPointersVelocity[pointerId] ?: return Velocity.Zero
