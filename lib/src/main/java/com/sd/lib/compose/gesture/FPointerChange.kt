@@ -27,10 +27,6 @@ fun Modifier.fPointerChange(
     pointerInput(Unit) {
         forEachGesture {
             awaitPointerEventScope {
-                val touchSlop = viewConfiguration.touchSlop
-                var pastTouchSlop = false
-                var pan = Offset.Zero
-
                 val firstDown = awaitFirstDown(requireUnconsumed = false)
 
                 scopeImpl.onStart()
@@ -40,6 +36,11 @@ fun Modifier.fPointerChange(
                 scopeImpl.onDown(firstDown)
                 onDown?.invoke(scopeImpl, firstDown)
                 if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
+
+                // Used for move event.
+                val touchSlop = viewConfiguration.touchSlop
+                var pastTouchSlop = false
+                var pan = Offset.Zero
 
                 do {
                     val event = awaitPointerEvent()
