@@ -32,11 +32,11 @@ fun Modifier.fPointerChange(
                     pass = PointerEventPass.Main,
                 ).first()
 
-                scopeImpl.onStart()
+                scopeImpl.onStart(currentEvent)
                 onStart?.invoke(scopeImpl)
                 if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
 
-                scopeImpl.onDown(firstDown)
+                scopeImpl.onDown(firstDown, currentEvent)
                 onDown?.invoke(scopeImpl, firstDown)
                 if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
 
@@ -50,10 +50,10 @@ fun Modifier.fPointerChange(
                     val hasDown = event.fHasDownPointer()
                     event.changes.forEach {
                         if (it.changedToDown(requireUnconsumedDown)) {
-                            scopeImpl.onDown(it)
+                            scopeImpl.onDown(it, currentEvent)
                             onDown?.invoke(scopeImpl, it)
                         } else if (it.changedToUp(requireUnconsumedUp)) {
-                            scopeImpl.onUp(it)
+                            scopeImpl.onUp(it, currentEvent)
                             onUp?.invoke(scopeImpl, it)
                         } else if (it.positionChanged(requireUnconsumedMove)) {
                             if (hasDown) {
@@ -64,7 +64,7 @@ fun Modifier.fPointerChange(
                                     }
                                 }
                                 if (pastTouchSlop) {
-                                    scopeImpl.onMove(it)
+                                    scopeImpl.onMove(it, currentEvent)
                                     onMove?.invoke(scopeImpl, it)
                                 }
                             }
@@ -91,7 +91,7 @@ interface FPointerChangeScope : FGestureScope {
     fun getPointerVelocity(pointerId: PointerId): Velocity
 }
 
-internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope {
+private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope {
     private var _currentEvent: PointerEvent? = null
     private var _maxPointerCount = 0
 
@@ -112,12 +112,13 @@ internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope
         return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity() ?: Velocity.Zero
     }
 
-    internal fun onStart() {
+    fun onStart(event: PointerEvent) {
         reset()
         resetCancelFlag()
+        _currentEvent = event
     }
 
-    internal fun onDown(input: PointerInputChange) {
+    fun onDown(input: PointerInputChange, event: PointerEvent) {
         if (_pointerHolder.containsKey(input.id)) return
 
         val velocityTracker = if (enableVelocity) {
@@ -126,16 +127,19 @@ internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope
 
         _pointerHolder[input.id] = PointerInfo(input, velocityTracker)
         _maxPointerCount++
+        _currentEvent = event
     }
 
-    internal fun onUp(input: PointerInputChange) {
+    fun onUp(input: PointerInputChange, event: PointerEvent) {
         _pointerHolder.remove(input.id)
+        _currentEvent = event
     }
 
-    internal fun onMove(input: PointerInputChange) {
+    fun onMove(input: PointerInputChange, event: PointerEvent) {
         if (enableVelocity) {
             _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
         }
+        _currentEvent = event
     }
 
     override fun cancelGesture() {
