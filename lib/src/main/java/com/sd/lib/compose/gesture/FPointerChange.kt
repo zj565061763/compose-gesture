@@ -53,8 +53,9 @@ fun Modifier.fPointerChange(
                             scopeImpl.onDown(it, currentEvent)
                             onDown?.invoke(scopeImpl, it)
                         } else if (it.changedToUp(requireUnconsumedUp)) {
-                            scopeImpl.onUp(it, currentEvent)
+                            scopeImpl.onUpBefore(currentEvent)
                             onUp?.invoke(scopeImpl, it)
+                            scopeImpl.onUpAfter(it)
                         } else if (it.positionChanged(requireUnconsumedMove)) {
                             if (hasDown) {
                                 if (!pastTouchSlop) {
@@ -130,8 +131,12 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
         _currentEvent = event
     }
 
-    fun onUp(input: PointerInputChange, event: PointerEvent) {
+    fun onUpBefore(event: PointerEvent) {
         _currentEvent = event
+    }
+
+    fun onUpAfter(input: PointerInputChange) {
+        _pointerHolder.remove(input.id)
     }
 
     fun onMove(input: PointerInputChange, event: PointerEvent) {
