@@ -62,7 +62,7 @@ private fun SamplePointerChangeInPager(
 //                        it.consume()
                     },
                     onFinish = {
-                        logMsg { "PointerChange onFinish maxCount:$maxDownPointerCount" }
+                        logMsg { "PointerChange onFinish maxPointerCount:$maxPointerCount" }
                     },
                 )
         ) {

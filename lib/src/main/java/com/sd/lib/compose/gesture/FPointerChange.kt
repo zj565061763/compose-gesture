@@ -6,10 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerId
-import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.Velocity
 
@@ -83,9 +80,11 @@ fun Modifier.fPointerChange(
 }
 
 interface FPointerChangeScope : FGestureScope {
-    val downPointerCount: Int
+    val currentEvent: PointerEvent?
 
-    val maxDownPointerCount: Int
+    val pointerCount: Int
+
+    val maxPointerCount: Int
 
     var enableVelocity: Boolean
 
@@ -93,23 +92,24 @@ interface FPointerChangeScope : FGestureScope {
 }
 
 internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope {
-    private val _downPointers = mutableMapOf<PointerId, PointerInputChange>()
-    private val _downPointersVelocity = mutableMapOf<PointerId, VelocityTracker>()
+    private var _currentEvent: PointerEvent? = null
+    private var _maxPointerCount = 0
 
-    private var _maxDownPointerCount = 0
-    private var _enableVelocity = false
+    private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
 
-    override val downPointerCount: Int
-        get() = _downPointers.size
+    override val currentEvent: PointerEvent?
+        get() = _currentEvent
 
-    override val maxDownPointerCount: Int
-        get() = _maxDownPointerCount
+    override val pointerCount: Int
+        get() = _pointerHolder.size
 
-    override var enableVelocity: Boolean by ::_enableVelocity
+    override val maxPointerCount: Int
+        get() = _maxPointerCount
+
+    override var enableVelocity: Boolean = false
 
     override fun getPointerVelocity(pointerId: PointerId): Velocity {
-        val tracker = _downPointersVelocity[pointerId] ?: return Velocity.Zero
-        return tracker.calculateVelocity()
+        return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity() ?: Velocity.Zero
     }
 
     internal fun onStart() {
@@ -118,25 +118,23 @@ internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope
     }
 
     internal fun onDown(input: PointerInputChange) {
-        if (_downPointers.put(input.id, input) == null) {
-            _maxDownPointerCount++
-        }
-        if (_enableVelocity) {
-            if (!_downPointersVelocity.containsKey(input.id)) {
-                _downPointersVelocity[input.id] = VelocityTracker().also {
-                    it.addPosition(input.uptimeMillis, input.position)
-                }
-            }
-        }
+        if (_pointerHolder.containsKey(input.id)) return
+
+        val velocityTracker = if (enableVelocity) {
+            VelocityTracker().apply { this.addPosition(input.uptimeMillis, input.position) }
+        } else null
+
+        _pointerHolder[input.id] = PointerInfo(input, velocityTracker)
+        _maxPointerCount++
     }
 
     internal fun onUp(input: PointerInputChange) {
-        _downPointers.remove(input.id)
+        _pointerHolder.remove(input.id)
     }
 
     internal fun onMove(input: PointerInputChange) {
-        if (_enableVelocity) {
-            _downPointersVelocity[input.id]?.addPosition(input.uptimeMillis, input.position)
+        if (enableVelocity) {
+            _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
         }
     }
 
@@ -146,8 +144,15 @@ internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope
     }
 
     private fun reset() {
-        _downPointers.clear()
-        _downPointersVelocity.clear()
-        _maxDownPointerCount = 0
+        _currentEvent = null
+        _maxPointerCount = 0
+        _pointerHolder.clear()
+        enableVelocity = false
     }
+
+    private data class PointerInfo(
+        val change: PointerInputChange,
+        val velocityTracker: VelocityTracker?,
+    )
 }
+
