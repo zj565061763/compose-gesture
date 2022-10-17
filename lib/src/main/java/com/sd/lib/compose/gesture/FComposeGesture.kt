@@ -3,26 +3,6 @@ package com.sd.lib.compose.gesture
 import android.util.Log
 import androidx.compose.ui.input.pointer.*
 
-suspend fun AwaitPointerEventScope.fAwaitDown(
-    count: Int = 1,
-    requireUnconsumed: Boolean = true,
-    pass: PointerEventPass = PointerEventPass.Main,
-): List<PointerInputChange> {
-    require(count > 0) { "Require count > 0" }
-    val map = mutableMapOf<PointerId, PointerInputChange>()
-    do {
-        val event = awaitPointerEvent(pass = pass)
-        event.changes.forEach {
-            if (it.changedToDown(requireUnconsumed)) {
-                map[it.id] = it
-            } else if (it.changedToUp(requireUnconsumed)) {
-                map.remove(it.id)
-            }
-        }
-    } while (map.size < count)
-    return map.values.toList()
-}
-
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
     if (currentEvent.fHasDownPointer()) {
         do {
