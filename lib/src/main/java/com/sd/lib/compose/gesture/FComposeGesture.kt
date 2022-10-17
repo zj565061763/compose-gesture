@@ -10,7 +10,7 @@ suspend fun AwaitPointerEventScope.fAwaitDown(
 ): List<PointerInputChange> {
     require(count > 0) { "Require count > 0" }
     val map = mutableMapOf<PointerId, PointerInputChange>()
-    while (map.size < count) {
+    do {
         val event = awaitPointerEvent(pass = pass)
         event.changes.forEach {
             if (it.changedToDown(requireUnconsumed)) {
@@ -19,7 +19,7 @@ suspend fun AwaitPointerEventScope.fAwaitDown(
                 map.remove(it.id)
             }
         }
-    }
+    } while (map.size < count)
     return map.values.toList()
 }
 
