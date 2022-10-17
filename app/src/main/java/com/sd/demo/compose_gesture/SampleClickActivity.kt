@@ -36,8 +36,8 @@ private fun SampleClick(
         modifier = modifier
             .fillMaxSize()
             .fClick(
-                onPress = {
-                    logMsg { "onPress" }
+                onTap = {
+                    logMsg { "onTap" }
                 },
                 onDoubleTap = {
                     logMsg { "onDoubleTap" }
@@ -45,9 +45,6 @@ private fun SampleClick(
                 onLongPress = {
                     logMsg { "onLongPress" }
                 },
-                onTap = {
-                    logMsg { "onTap" }
-                }
             )
     )
 }
