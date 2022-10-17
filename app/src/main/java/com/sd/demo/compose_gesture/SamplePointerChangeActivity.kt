@@ -40,13 +40,13 @@ private fun SamplePointerChange(
                     logMsg { "PointerChange onStart" }
                 },
                 onDown = {
-                    logMsg { "PointerChange onDown count:$downPointerCount" }
+                    logMsg { "PointerChange onDown count:$downPointerCount id:${it.id}" }
                 },
                 onUp = {
-                    logMsg { "PointerChange onUp count:$downPointerCount" }
+                    logMsg { "PointerChange onUp count:$downPointerCount id:${it.id}" }
                 },
                 onMove = {
-                    logMsg { "PointerChange onMove" }
+                    logMsg { "PointerChange onMove id:${it.id}" }
                 },
                 onFinish = {
                     logMsg { "PointerChange onFinish maxCount:$maxDownPointerCount" }
