@@ -8,22 +8,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 
 fun Modifier.fClick(
     onPress: (suspend PressGestureScope.(Offset) -> Unit)? = null,
+    onTap: ((Offset) -> Unit)? = null,
     onDoubleTap: ((Offset) -> Unit)? = null,
     onLongPress: ((Offset) -> Unit)? = null,
-    onTap: ((Offset) -> Unit)? = null,
 ) = pointerInput(Unit) {
-    if (onPress != null) {
-        detectTapGestures(
-            onPress = onPress,
-            onDoubleTap = onDoubleTap,
-            onLongPress = onLongPress,
-            onTap = onTap,
-        )
-    } else {
-        detectTapGestures(
-            onDoubleTap = onDoubleTap,
-            onLongPress = onLongPress,
-            onTap = onTap,
-        )
-    }
+    detectTapGestures(
+        onPress = onPress ?: {},
+        onTap = onTap,
+        onDoubleTap = onDoubleTap,
+        onLongPress = onLongPress,
+    )
 }
