@@ -10,6 +10,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import kotlin.math.abs
 
 fun Modifier.fScaleGesture(
+    requireUnconsumedDown: Boolean = false,
     onStart: (FScaleGestureScope.() -> Unit)? = null,
     onFinish: (FScaleGestureScope.() -> Unit)? = null,
     onScale: FScaleGestureScope.(event: PointerEvent, centroid: Offset, change: Float) -> Unit,
@@ -26,7 +27,7 @@ fun Modifier.fScaleGesture(
                 var hasScale = false
 
                 scopeImpl.resetCancelFlag()
-                awaitFirstDown(requireUnconsumed = false)
+                awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
 
                 while (!scopeImpl.isGestureCanceled) {
                     val event = awaitPointerEvent()
