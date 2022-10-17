@@ -1,12 +1,12 @@
 package com.sd.lib.compose.gesture
 
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
@@ -14,6 +14,8 @@ import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.Velocity
 
 fun Modifier.fPointerChange(
+    requireUnconsumedDown: Boolean = false,
+    requireUnconsumedUp: Boolean = false,
     requireUnconsumedMove: Boolean = true,
     onStart: (FPointerChangeScope.() -> Unit)? = null,
     onDown: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
@@ -27,7 +29,11 @@ fun Modifier.fPointerChange(
     pointerInput(Unit) {
         forEachGesture {
             awaitPointerEventScope {
-                val firstDown = awaitFirstDown(requireUnconsumed = false)
+                val firstDown = fAwaitDown(
+                    count = 1,
+                    requireUnconsumed = requireUnconsumedDown,
+                    pass = PointerEventPass.Main,
+                ).first()
 
                 scopeImpl.onStart()
                 onStart?.invoke(scopeImpl)
@@ -46,10 +52,10 @@ fun Modifier.fPointerChange(
                     val event = awaitPointerEvent()
                     val hasDown = event.fHasDownPointer()
                     event.changes.forEach {
-                        if (it.changedToDown(false)) {
+                        if (it.changedToDown(requireUnconsumedDown)) {
                             scopeImpl.onDown(it)
                             onDown?.invoke(scopeImpl, it)
-                        } else if (it.changedToUp(false)) {
+                        } else if (it.changedToUp(requireUnconsumedUp)) {
                             scopeImpl.onUp(it)
                             onUp?.invoke(scopeImpl, it)
                         } else if (it.positionChanged(requireUnconsumedMove)) {

@@ -8,7 +8,7 @@ suspend fun AwaitPointerEventScope.fAwaitDown(
     requireUnconsumed: Boolean = true,
     pass: PointerEventPass = PointerEventPass.Main,
 ): List<PointerInputChange> {
-    require(count > 0)
+    require(count > 0) { "Require count > 0" }
     val map = mutableMapOf<PointerId, PointerInputChange>()
     while (map.size < count) {
         val event = awaitPointerEvent(pass = pass)
