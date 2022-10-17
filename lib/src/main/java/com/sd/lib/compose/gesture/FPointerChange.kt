@@ -113,8 +113,8 @@ internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope
     }
 
     internal fun onStart() {
-        resetCancelFlag()
         reset()
+        resetCancelFlag()
     }
 
     internal fun onDown(input: PointerInputChange) {
