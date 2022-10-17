@@ -62,5 +62,5 @@ class MainActivity : ComponentActivity() {
 
 inline fun logMsg(block: () -> Any) {
     val msg = block().toString()
-    Log.i("compose-gesture", msg)
+    Log.i("compose-gesture-demo", msg)
 }
