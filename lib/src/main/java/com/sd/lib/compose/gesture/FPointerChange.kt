@@ -108,8 +108,8 @@ internal class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope
     override var enableVelocity: Boolean by ::_enableVelocity
 
     override fun getPointerVelocity(pointerId: PointerId): Velocity {
-        val velocityTracker = _downPointersVelocity[pointerId] ?: return Velocity.Zero
-        return velocityTracker.calculateVelocity()
+        val tracker = _downPointersVelocity[pointerId] ?: return Velocity.Zero
+        return tracker.calculateVelocity()
     }
 
     internal fun onStart() {
