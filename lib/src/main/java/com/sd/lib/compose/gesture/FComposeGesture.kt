@@ -41,19 +41,30 @@ internal fun PointerInputChange.positionChanged(requireUnconsumed: Boolean): Boo
 }
 
 interface FGestureScope {
+    val currentEvent: PointerEvent?
+
     fun cancelGesture()
 }
 
 internal open class BaseGestureScope : FGestureScope {
-    internal var isGestureCanceled = false
+    private var _currentEvent: PointerEvent? = null
+
+    var isGestureCanceled = false
         private set
+
+    final override val currentEvent: PointerEvent?
+        get() = _currentEvent
 
     override fun cancelGesture() {
         isGestureCanceled = true
     }
 
-    internal fun resetCancelFlag() {
+    fun resetCancelFlag() {
         isGestureCanceled = false
+    }
+
+    protected fun setCurrentEvent(event: PointerEvent?) {
+        _currentEvent = event
     }
 }
 

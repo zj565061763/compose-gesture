@@ -81,8 +81,6 @@ fun Modifier.fPointerChange(
 }
 
 interface FPointerChangeScope : FGestureScope {
-    val currentEvent: PointerEvent?
-
     val pointerCount: Int
 
     val maxPointerCount: Int
@@ -93,13 +91,8 @@ interface FPointerChangeScope : FGestureScope {
 }
 
 private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope {
-    private var _currentEvent: PointerEvent? = null
     private var _maxPointerCount = 0
-
     private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
-
-    override val currentEvent: PointerEvent?
-        get() = _currentEvent
 
     override val pointerCount: Int
         get() = _pointerHolder.size
@@ -116,7 +109,7 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
     fun onStart(event: PointerEvent) {
         reset()
         resetCancelFlag()
-        _currentEvent = event
+        setCurrentEvent(event)
     }
 
     fun onDown(input: PointerInputChange, event: PointerEvent) {
@@ -128,11 +121,11 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
 
         _pointerHolder[input.id] = PointerInfo(input, velocityTracker)
         _maxPointerCount++
-        _currentEvent = event
+        setCurrentEvent(event)
     }
 
     fun onUpBefore(input: PointerInputChange, event: PointerEvent) {
-        _currentEvent = event
+        setCurrentEvent(event)
     }
 
     fun onUpAfter(input: PointerInputChange) {
@@ -143,7 +136,7 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
         if (enableVelocity) {
             _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
         }
-        _currentEvent = event
+        setCurrentEvent(event)
     }
 
     override fun cancelGesture() {
@@ -152,7 +145,7 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
     }
 
     private fun reset() {
-        _currentEvent = null
+        setCurrentEvent(null)
         _maxPointerCount = 0
         _pointerHolder.clear()
         enableVelocity = false
