@@ -37,16 +37,16 @@ private fun SamplePointerChange(
             .fillMaxSize()
             .fPointerChange(
                 onStart = {
-                    logMsg { "PointerChange onStart" }
+                    logMsg { "PointerChange onStart event:$currentEvent changes:${currentEvent?.changes?.size}" }
                 },
                 onDown = {
-                    logMsg { "PointerChange onDown pointerCount:$pointerCount id:${it.id}" }
+                    logMsg { "PointerChange onDown pointerCount:$pointerCount id:${it.id} event:$currentEvent changes:${currentEvent?.changes?.size}" }
                 },
                 onUp = {
-                    logMsg { "PointerChange onUp pointerCount:$pointerCount id:${it.id}" }
+                    logMsg { "PointerChange onUp pointerCount:$pointerCount id:${it.id} event:$currentEvent changes:${currentEvent?.changes?.size}" }
                 },
                 onMove = {
-                    logMsg { "PointerChange onMove id:${it.id}" }
+                    logMsg { "PointerChange onMove id:${it.id} event:$currentEvent changes:${currentEvent?.changes?.size}" }
                 },
                 onFinish = {
                     logMsg { "PointerChange onFinish maxPointerCount:$maxPointerCount" }
