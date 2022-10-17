@@ -131,7 +131,6 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
     }
 
     fun onUp(input: PointerInputChange, event: PointerEvent) {
-        _pointerHolder.remove(input.id)
         _currentEvent = event
     }
 
