@@ -1,12 +1,16 @@
 package com.sd.lib.compose.gesture
 
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerId
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.Velocity
 
@@ -26,11 +30,7 @@ fun Modifier.fPointerChange(
     pointerInput(Unit) {
         forEachGesture {
             awaitPointerEventScope {
-                val firstDown = fAwaitDown(
-                    count = 1,
-                    requireUnconsumed = requireUnconsumedDown,
-                    pass = PointerEventPass.Main,
-                ).first()
+                val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
 
                 scopeImpl.onStart(currentEvent)
                 onStart?.invoke(scopeImpl)
