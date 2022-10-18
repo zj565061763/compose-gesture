@@ -38,6 +38,7 @@ fun Modifier.fScaleGesture(
                         }
                     }
 
+                    if (!event.fHasDownPointer()) break
                     val zoomChange = event.calculateZoom()
 
                     if (!pastTouchSlop) {
@@ -63,6 +64,7 @@ fun Modifier.fScaleGesture(
                         val centroid = event.calculateCentroid(useCurrent = false)
                         onScale.invoke(scopeImpl, centroid, zoomChange)
                     }
+
                 } while (!scopeImpl.isGestureCanceled)
             }
         }
