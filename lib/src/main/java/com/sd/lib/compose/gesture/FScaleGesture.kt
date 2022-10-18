@@ -21,13 +21,13 @@ fun Modifier.fScaleGesture(
     pointerInput(Unit) {
         forEachGesture {
             awaitPointerEventScope {
+                awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
+                scopeImpl.onStart(currentEvent)
+
                 val touchSlop = viewConfiguration.touchSlop
                 var pastTouchSlop = false
                 var zoom = 1f
                 var hasScale = false
-
-                scopeImpl.resetCancelFlag()
-                awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
 
                 while (!scopeImpl.isGestureCanceled) {
                     val event = awaitPointerEvent()
@@ -72,4 +72,14 @@ interface FScaleGestureScope : FGestureScope {
 }
 
 private class FScaleGestureScopeImpl : BaseGestureScope(), FScaleGestureScope {
+
+    fun onStart(event: PointerEvent) {
+        reset()
+        resetCancelFlag()
+        setCurrentEvent(event)
+    }
+
+    fun reset() {
+
+    }
 }
