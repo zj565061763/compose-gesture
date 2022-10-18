@@ -23,8 +23,10 @@ fun PointerEvent.fHasConsumed(): Boolean = changes.any { it.isConsumed }
 fun PointerEvent.fConsume(): Boolean {
     var consume = false
     changes.forEach {
-        if (!it.isConsumed) consume = true
-        it.consume()
+        if (!it.isConsumed) {
+            it.consume()
+            consume = true
+        }
     }
     return consume
 }
