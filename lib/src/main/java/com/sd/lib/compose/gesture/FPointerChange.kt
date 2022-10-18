@@ -52,13 +52,13 @@ fun Modifier.fPointerChange(
                     val hasDown = event.fHasDownPointer()
 
                     event.changes.forEach {
-                        if (it.changedToDown(requireUnconsumedDown)) {
+                        if (it.fChangedToDown(requireUnconsumedDown)) {
                             scopeImpl.onDown(it)
                             onDown?.invoke(scopeImpl, it)
-                        } else if (it.changedToUp(requireUnconsumedUp)) {
+                        } else if (it.fChangedToUp(requireUnconsumedUp)) {
                             onUp?.invoke(scopeImpl, it)
                             scopeImpl.onUpAfter(it)
-                        } else if (it.positionChanged(requireUnconsumedMove)) {
+                        } else if (it.fPositionChanged(requireUnconsumedMove)) {
                             if (hasDown) {
                                 if (!pastTouchSlop) {
                                     pan += event.calculatePan()

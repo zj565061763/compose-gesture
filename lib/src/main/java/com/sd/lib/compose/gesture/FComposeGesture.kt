@@ -34,7 +34,7 @@ fun PointerEvent.fConsume(): Boolean {
 fun PointerEvent.fConsumePositionChanged(requireUnconsumed: Boolean = true): Boolean {
     var consume = false
     changes.forEach {
-        if (it.positionChanged(requireUnconsumed)) {
+        if (it.fPositionChanged(requireUnconsumed)) {
             it.consume()
             consume = true
         }
@@ -42,15 +42,15 @@ fun PointerEvent.fConsumePositionChanged(requireUnconsumed: Boolean = true): Boo
     return consume
 }
 
-internal fun PointerInputChange.changedToDown(requireUnconsumed: Boolean): Boolean {
+internal fun PointerInputChange.fChangedToDown(requireUnconsumed: Boolean): Boolean {
     return if (requireUnconsumed) changedToDown() else changedToDownIgnoreConsumed()
 }
 
-internal fun PointerInputChange.changedToUp(requireUnconsumed: Boolean): Boolean {
+internal fun PointerInputChange.fChangedToUp(requireUnconsumed: Boolean): Boolean {
     return if (requireUnconsumed) changedToUp() else changedToUpIgnoreConsumed()
 }
 
-internal fun PointerInputChange.positionChanged(requireUnconsumed: Boolean): Boolean {
+internal fun PointerInputChange.fPositionChanged(requireUnconsumed: Boolean): Boolean {
     return if (requireUnconsumed) positionChanged() else positionChangedIgnoreConsumed()
 }
 
