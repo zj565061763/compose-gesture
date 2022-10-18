@@ -1,6 +1,7 @@
 package com.sd.lib.compose.gesture
 
 import android.util.Log
+import androidx.annotation.CallSuper
 import androidx.compose.ui.input.pointer.*
 
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
@@ -55,6 +56,7 @@ internal open class BaseGestureScope : FGestureScope {
     final override val currentEvent: PointerEvent?
         get() = _currentEvent
 
+    @CallSuper
     override fun cancelGesture() {
         isGestureCanceled = true
         _currentEvent = null
