@@ -7,7 +7,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
@@ -32,11 +31,13 @@ fun Modifier.fPointerChange(
             awaitPointerEventScope {
                 val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
 
-                scopeImpl.onStart(currentEvent)
+                scopeImpl.reset()
+                scopeImpl.setCurrentEvent(currentEvent)
+
                 onStart?.invoke(scopeImpl)
                 if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
 
-                scopeImpl.onDown(firstDown, currentEvent)
+                scopeImpl.onDown(firstDown)
                 onDown?.invoke(scopeImpl, firstDown)
                 if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
 
@@ -47,13 +48,14 @@ fun Modifier.fPointerChange(
 
                 do {
                     val event = awaitPointerEvent()
+                    scopeImpl.setCurrentEvent(event)
                     val hasDown = event.fHasDownPointer()
+
                     event.changes.forEach {
                         if (it.changedToDown(requireUnconsumedDown)) {
-                            scopeImpl.onDown(it, currentEvent)
+                            scopeImpl.onDown(it)
                             onDown?.invoke(scopeImpl, it)
                         } else if (it.changedToUp(requireUnconsumedUp)) {
-                            scopeImpl.onUpBefore(it, currentEvent)
                             onUp?.invoke(scopeImpl, it)
                             scopeImpl.onUpAfter(it)
                         } else if (it.positionChanged(requireUnconsumedMove)) {
@@ -65,12 +67,13 @@ fun Modifier.fPointerChange(
                                     }
                                 }
                                 if (pastTouchSlop) {
-                                    scopeImpl.onMove(it, currentEvent)
+                                    scopeImpl.onMove(it)
                                     onMove?.invoke(scopeImpl, it)
                                 }
                             }
                         }
                     }
+
                     if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
                 } while (hasDown)
 
@@ -106,13 +109,7 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
         return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity() ?: Velocity.Zero
     }
 
-    fun onStart(event: PointerEvent) {
-        reset()
-        resetCancelFlag()
-        setCurrentEvent(event)
-    }
-
-    fun onDown(input: PointerInputChange, event: PointerEvent) {
+    fun onDown(input: PointerInputChange) {
         if (_pointerHolder.containsKey(input.id)) return
 
         val velocityTracker = if (enableVelocity) {
@@ -121,31 +118,20 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
 
         _pointerHolder[input.id] = PointerInfo(input, velocityTracker)
         _maxPointerCount++
-        setCurrentEvent(event)
-    }
-
-    fun onUpBefore(input: PointerInputChange, event: PointerEvent) {
-        setCurrentEvent(event)
     }
 
     fun onUpAfter(input: PointerInputChange) {
         _pointerHolder.remove(input.id)
     }
 
-    fun onMove(input: PointerInputChange, event: PointerEvent) {
+    fun onMove(input: PointerInputChange) {
         if (enableVelocity) {
             _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
         }
-        setCurrentEvent(event)
     }
 
-    override fun cancelGesture() {
-        super.cancelGesture()
-        reset()
-    }
-
-    private fun reset() {
-        setCurrentEvent(null)
+    override fun reset() {
+        super.reset()
         _maxPointerCount = 0
         _pointerHolder.clear()
         enableVelocity = false
