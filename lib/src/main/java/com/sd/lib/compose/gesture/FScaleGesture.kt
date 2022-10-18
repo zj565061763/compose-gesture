@@ -23,7 +23,6 @@ fun Modifier.fScaleGesture(
                 awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
 
                 scopeImpl.reset()
-                scopeImpl.setCurrentEvent(currentEvent)
 
                 val touchSlop = viewConfiguration.touchSlop
                 var pastTouchSlop = false
@@ -32,10 +31,10 @@ fun Modifier.fScaleGesture(
 
                 do {
                     val event = awaitPointerEvent()
+                    scopeImpl.setCurrentEvent(event)
 
                     if (hasScale) {
                         if (event.fHasConsumed() || event.fDownPointerCount() < 2) {
-                            scopeImpl.setCurrentEvent(currentEvent)
                             onFinish?.invoke(scopeImpl)
                             break
                         }
@@ -56,13 +55,11 @@ fun Modifier.fScaleGesture(
 
                     if (pastTouchSlop && zoomChange != 1f) {
                         if (!hasScale) {
-                            scopeImpl.setCurrentEvent(currentEvent)
                             onStart?.invoke(scopeImpl)
                             if (scopeImpl.isGestureCanceled) break
                             hasScale = true
                         }
 
-                        scopeImpl.setCurrentEvent(currentEvent)
                         val centroid = event.calculateCentroid(useCurrent = false)
                         onScale.invoke(scopeImpl, centroid, zoomChange)
                     }
