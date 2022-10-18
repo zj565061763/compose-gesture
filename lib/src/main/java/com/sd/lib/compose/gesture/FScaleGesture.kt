@@ -22,7 +22,7 @@ fun Modifier.fScaleGesture(
             awaitPointerEventScope {
                 awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
 
-                scopeImpl.resetCancelFlag()
+                scopeImpl.reset()
                 scopeImpl.setCurrentEvent(currentEvent)
 
                 val touchSlop = viewConfiguration.touchSlop

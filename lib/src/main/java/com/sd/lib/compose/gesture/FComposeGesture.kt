@@ -56,13 +56,13 @@ internal open class BaseGestureScope : FGestureScope {
     final override val currentEvent: PointerEvent?
         get() = _currentEvent
 
-    @CallSuper
-    override fun cancelGesture() {
+    final override fun cancelGesture() {
         isGestureCanceled = true
-        _currentEvent = null
     }
 
-    fun resetCancelFlag() {
+    @CallSuper
+    open fun reset() {
+        _currentEvent = null
         isGestureCanceled = false
     }
 
