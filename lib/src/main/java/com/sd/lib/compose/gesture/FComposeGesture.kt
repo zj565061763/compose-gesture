@@ -57,13 +57,14 @@ internal open class BaseGestureScope : FGestureScope {
 
     override fun cancelGesture() {
         isGestureCanceled = true
+        _currentEvent = null
     }
 
     fun resetCancelFlag() {
         isGestureCanceled = false
     }
 
-    protected fun setCurrentEvent(event: PointerEvent?) {
+    fun setCurrentEvent(event: PointerEvent?) {
         _currentEvent = event
     }
 }
