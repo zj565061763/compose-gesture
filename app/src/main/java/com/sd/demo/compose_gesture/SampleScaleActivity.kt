@@ -52,10 +52,10 @@ fun SampleScale(
                 onFinish = {
                     logMsg { "scale onFinish" }
                 }
-            ) { event, centroid, change ->
+            ) { centroid, change ->
                 logMsg { "scale centroid:$centroid change:$change" }
                 scale *= change
-                event.fConsume()
+                currentEvent?.fConsume()
 
                 if (scale < 0.3f && change < 1f) {
                     cancelGesture()

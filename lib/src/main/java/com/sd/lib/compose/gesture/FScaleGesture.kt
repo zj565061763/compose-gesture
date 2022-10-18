@@ -13,7 +13,7 @@ fun Modifier.fScaleGesture(
     requireUnconsumedDown: Boolean = false,
     onStart: (FScaleGestureScope.() -> Unit)? = null,
     onFinish: (FScaleGestureScope.() -> Unit)? = null,
-    onScale: FScaleGestureScope.(event: PointerEvent, centroid: Offset, change: Float) -> Unit,
+    onScale: FScaleGestureScope.(centroid: Offset, change: Float) -> Unit,
 ) = composed {
 
     val scopeImpl = remember { FScaleGestureScopeImpl() }
@@ -22,14 +22,13 @@ fun Modifier.fScaleGesture(
         forEachGesture {
             awaitPointerEventScope {
                 awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
-                scopeImpl.onStart(currentEvent)
 
                 val touchSlop = viewConfiguration.touchSlop
                 var pastTouchSlop = false
                 var zoom = 1f
                 var hasScale = false
 
-                while (!scopeImpl.isGestureCanceled) {
+                do {
                     val event = awaitPointerEvent()
 
                     if (hasScale) {
@@ -40,6 +39,7 @@ fun Modifier.fScaleGesture(
                     }
 
                     val zoomChange = event.calculateZoom()
+
                     if (!pastTouchSlop) {
                         zoom *= zoomChange
 
@@ -50,19 +50,20 @@ fun Modifier.fScaleGesture(
                         }
                     }
 
-                    if (pastTouchSlop) {
-                        val centroid = event.calculateCentroid(useCurrent = false)
-                        if (zoomChange != 1f) {
-                            if (!hasScale) {
-                                onStart?.invoke(scopeImpl)
-                                if (scopeImpl.isGestureCanceled) break
-                            }
+                    if (pastTouchSlop && zoomChange != 1f) {
+                        if (!hasScale) {
+                            scopeImpl.onStart(currentEvent)
+                            onStart?.invoke(scopeImpl)
 
+                            if (scopeImpl.isGestureCanceled) break
                             hasScale = true
-                            scopeImpl.onScale(event, centroid, zoomChange)
                         }
+
+                        scopeImpl.onScale(currentEvent)
+                        val centroid = event.calculateCentroid(useCurrent = false)
+                        onScale.invoke(scopeImpl, centroid, zoomChange)
                     }
-                }
+                } while (!scopeImpl.isGestureCanceled)
             }
         }
     }
@@ -79,7 +80,16 @@ private class FScaleGestureScopeImpl : BaseGestureScope(), FScaleGestureScope {
         setCurrentEvent(event)
     }
 
-    fun reset() {
+    fun onScale(event: PointerEvent) {
+        setCurrentEvent(event)
+    }
 
+    override fun cancelGesture() {
+        super.cancelGesture()
+        reset()
+    }
+
+    private fun reset() {
+        setCurrentEvent(null)
     }
 }
