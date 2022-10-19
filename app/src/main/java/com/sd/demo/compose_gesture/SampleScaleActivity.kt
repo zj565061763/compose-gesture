@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import com.sd.demo.comopse_gesture.R
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fConsume
+import com.sd.lib.compose.gesture.fConsumePositionChanged
 import com.sd.lib.compose.gesture.fScaleGesture
 
 class SampleScaleActivity : ComponentActivity() {
@@ -55,7 +56,7 @@ fun SampleScale(
             ) { centroid, change ->
                 logMsg { "scale centroid:$centroid change:$change" }
                 scale *= change
-                currentEvent?.fConsume()
+                currentEvent?.fConsumePositionChanged()
 
                 if (scale < 0.3f && change < 1f) {
                     cancelGesture()
