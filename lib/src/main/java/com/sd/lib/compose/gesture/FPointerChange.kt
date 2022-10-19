@@ -35,11 +35,17 @@ fun Modifier.fPointerChange(
                 scopeImpl.setCurrentEvent(currentEvent)
 
                 onStart?.invoke(scopeImpl)
-                if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
+                if (scopeImpl.isGestureCanceled) {
+                    onFinish?.invoke(scopeImpl)
+                    return@awaitPointerEventScope
+                }
 
                 scopeImpl.onDown(firstDown)
                 onDown?.invoke(scopeImpl, firstDown)
-                if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
+                if (scopeImpl.isGestureCanceled) {
+                    onFinish?.invoke(scopeImpl)
+                    return@awaitPointerEventScope
+                }
 
                 // Used for move event.
                 val touchSlop = viewConfiguration.touchSlop
@@ -74,7 +80,7 @@ fun Modifier.fPointerChange(
                         }
                     }
 
-                    if (scopeImpl.isGestureCanceled) return@awaitPointerEventScope
+                    if (scopeImpl.isGestureCanceled) break
                 } while (hasDown)
 
                 onFinish?.invoke(scopeImpl)

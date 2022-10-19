@@ -41,6 +41,9 @@ private fun SamplePointerChange(
                 },
                 onDown = {
                     logMsg { "PointerChange onDown pointerCount:$pointerCount id:${it.id} event:$currentEvent changes:${currentEvent?.changes?.size}" }
+                    if (pointerCount >= 4) {
+                        cancelGesture()
+                    }
                 },
                 onUp = {
                     logMsg { "PointerChange onUp pointerCount:$pointerCount id:${it.id} event:$currentEvent changes:${currentEvent?.changes?.size}" }
