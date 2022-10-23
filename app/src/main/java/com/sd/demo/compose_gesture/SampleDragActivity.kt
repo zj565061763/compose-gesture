@@ -49,7 +49,7 @@ fun SampleDrag(
             .fPointerChange(
                 onMove = {
                     val change = it.positionChange()
-                    logMsg { "drag event:${it.isConsumed} change:$change" }
+                    logMsg { "drag change:$change" }
                     offset += change
                 }
             )

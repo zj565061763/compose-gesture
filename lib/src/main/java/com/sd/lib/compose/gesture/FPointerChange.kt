@@ -1,6 +1,5 @@
 package com.sd.lib.compose.gesture
 
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.runtime.remember
@@ -31,7 +30,10 @@ fun Modifier.fPointerChange(
     pointerInput(Unit) {
         forEachGesture {
             awaitPointerEventScope {
-                val firstDown = awaitFirstDown(requireUnconsumed = requireUnconsumedDown)
+                val firstDown = fAwaitFirstDown(
+                    requireUnconsumed = requireUnconsumedDown,
+                    pass = pass,
+                )
 
                 scopeImpl.reset()
                 scopeImpl.setCurrentEvent(currentEvent)
