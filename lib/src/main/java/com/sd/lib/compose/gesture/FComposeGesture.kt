@@ -4,6 +4,19 @@ import android.util.Log
 import androidx.annotation.CallSuper
 import androidx.compose.ui.input.pointer.*
 
+suspend fun AwaitPointerEventScope.fAwaitFirstDown(
+    requireUnconsumed: Boolean = true,
+    pass: PointerEventPass = PointerEventPass.Main
+): PointerInputChange {
+    var event: PointerEvent
+    do {
+        event = awaitPointerEvent(pass)
+    } while (
+        !event.changes.all { it.fChangedToDown(requireUnconsumed) }
+    )
+    return event.changes[0]
+}
+
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
     if (currentEvent.fHasDownPointer()) {
         do {
