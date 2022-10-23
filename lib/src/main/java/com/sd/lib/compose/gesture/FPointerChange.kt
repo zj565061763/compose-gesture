@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
@@ -16,7 +17,8 @@ import androidx.compose.ui.unit.Velocity
 fun Modifier.fPointerChange(
     requireUnconsumedDown: Boolean = false,
     requireUnconsumedUp: Boolean = false,
-    requireUnconsumedMove: Boolean = true,
+    requireUnconsumedMove: Boolean = false,
+    pass: PointerEventPass = PointerEventPass.Main,
     onStart: (FPointerChangeScope.() -> Unit)? = null,
     onDown: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
     onUp: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
@@ -53,7 +55,7 @@ fun Modifier.fPointerChange(
                 var pan = Offset.Zero
 
                 do {
-                    val event = awaitPointerEvent()
+                    val event = awaitPointerEvent(pass)
                     scopeImpl.setCurrentEvent(event)
                     val hasDown = event.fHasDownPointer()
 
