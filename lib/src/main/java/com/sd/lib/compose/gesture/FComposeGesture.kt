@@ -99,5 +99,5 @@ internal open class BaseGestureScope : FGestureScope {
 
 internal inline fun logMsg(block: () -> Any) {
     val msg = block().toString()
-    Log.i("FComposeGesture", msg)
+    Log.i("compose-gesture", msg)
 }
