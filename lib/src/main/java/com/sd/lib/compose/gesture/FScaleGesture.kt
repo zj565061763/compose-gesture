@@ -59,12 +59,20 @@ fun Modifier.fScaleGesture(
                         if (pastTouchSlop && zoomChange != 1f) {
                             if (!hasScale) {
                                 onStart?.invoke(scopeImpl)
-                                if (scopeImpl.isGestureCanceled) break
-                                hasScale = true
+                                if (scopeImpl.isGestureCanceled) {
+                                    onFinish?.invoke(scopeImpl)
+                                    break
+                                }
                             }
 
+                            hasScale = true
                             val centroid = event.calculateCentroid(useCurrent = false)
                             onScale.invoke(scopeImpl, centroid, zoomChange)
+
+                            if (scopeImpl.isGestureCanceled) {
+                                onFinish?.invoke(scopeImpl)
+                                break
+                            }
                         }
                     }
                 } while (!scopeImpl.isGestureCanceled)
