@@ -30,28 +30,8 @@ fun Modifier.fPointerChange(
     pointerInput(Unit) {
         forEachGesture {
             awaitPointerEventScope {
-                val firstDown = fAwaitFirstDown(
-                    requireUnconsumed = requireUnconsumedDown,
-                    pass = pass,
-                )
-
                 scopeImpl.reset()
-                scopeImpl.setCurrentEvent(currentEvent)
 
-                onStart?.invoke(scopeImpl)
-                if (scopeImpl.isGestureCanceled) {
-                    onFinish?.invoke(scopeImpl)
-                    return@awaitPointerEventScope
-                }
-
-                scopeImpl.onDown(firstDown)
-                onDown?.invoke(scopeImpl, firstDown)
-                if (scopeImpl.isGestureCanceled) {
-                    onFinish?.invoke(scopeImpl)
-                    return@awaitPointerEventScope
-                }
-
-                // Used for move event.
                 val touchSlop = viewConfiguration.touchSlop
                 var pastTouchSlop = false
                 var pan = Offset.Zero
@@ -62,25 +42,33 @@ fun Modifier.fPointerChange(
 
                     val hasDown = event.fHasDownPointer()
 
-                    event.changes.forEach {
-                        if (it.fChangedToDown(requireUnconsumedDown)) {
-                            scopeImpl.onDown(it)
-                            onDown?.invoke(scopeImpl, it)
-                        } else if (it.fChangedToUp(requireUnconsumedUp)) {
-                            onUp?.invoke(scopeImpl, it)
-                            scopeImpl.onUpAfter(it)
-                        } else if (it.fPositionChanged(requireUnconsumedMove)) {
-                            if (hasDown) {
-                                if (!pastTouchSlop) {
-                                    pan += event.calculatePan()
-                                    if (pan.getDistance() > touchSlop) {
-                                        pastTouchSlop = true
+                    for (input in event.changes) {
+                        when {
+                            input.fChangedToDown(requireUnconsumedDown) -> {
+                                if (scopeImpl.maxPointerCount == 0) {
+                                    onStart?.invoke(scopeImpl)
+                                    if (scopeImpl.isGestureCanceled) break
+                                }
+                                scopeImpl.onDown(input)
+                                onDown?.invoke(scopeImpl, input)
+                            }
+                            input.fPositionChanged(requireUnconsumedMove) -> {
+                                if (hasDown) {
+                                    if (!pastTouchSlop) {
+                                        pan += event.calculatePan()
+                                        if (pan.getDistance() > touchSlop) {
+                                            pastTouchSlop = true
+                                        }
+                                    }
+                                    if (pastTouchSlop) {
+                                        scopeImpl.onMove(input)
+                                        onMove?.invoke(scopeImpl, input)
                                     }
                                 }
-                                if (pastTouchSlop) {
-                                    scopeImpl.onMove(it)
-                                    onMove?.invoke(scopeImpl, it)
-                                }
+                            }
+                            input.fChangedToUp(requireUnconsumedUp) -> {
+                                onUp?.invoke(scopeImpl, input)
+                                scopeImpl.onUpAfter(input)
                             }
                         }
                     }
