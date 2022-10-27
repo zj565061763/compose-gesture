@@ -52,6 +52,10 @@ fun Modifier.fPointerChange(
                                 scopeImpl.onDown(input)
                                 onDown?.invoke(scopeImpl, input)
                             }
+                            input.fChangedToUp(requireUnconsumedUp) -> {
+                                onUp?.invoke(scopeImpl, input)
+                                scopeImpl.onUpAfter(input)
+                            }
                             input.fPositionChanged(requireUnconsumedMove) -> {
                                 if (hasDown) {
                                     if (!pastTouchSlop) {
@@ -65,10 +69,6 @@ fun Modifier.fPointerChange(
                                         onMove?.invoke(scopeImpl, input)
                                     }
                                 }
-                            }
-                            input.fChangedToUp(requireUnconsumedUp) -> {
-                                onUp?.invoke(scopeImpl, input)
-                                scopeImpl.onUpAfter(input)
                             }
                         }
                     }
