@@ -7,8 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +16,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.sd.demo.comopse_gesture.R
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
-import com.sd.lib.compose.gesture.fConsume
 import com.sd.lib.compose.gesture.fConsumePositionChanged
 import com.sd.lib.compose.gesture.fScaleGesture
 
@@ -26,10 +24,7 @@ class SampleScaleActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
+                Surface(modifier = Modifier.fillMaxSize()) {
                     SampleScale()
                 }
             }
