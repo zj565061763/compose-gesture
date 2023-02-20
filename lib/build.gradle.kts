@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "compose-gesture"
-val libVersionName = "1.0.1"
+val libVersionName = "1.0.2"
 
 android {
     namespace = "com.sd.lib.compose.gesture"
