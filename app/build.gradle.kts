@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.sd.demo.comopse_gesture"
+    namespace = "com.sd.demo.compose_gesture"
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
