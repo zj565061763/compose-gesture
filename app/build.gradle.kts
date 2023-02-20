@@ -9,7 +9,7 @@ android {
     defaultConfig {
         minSdk = libs.versions.androidMinSdk.get().toInt()
         targetSdk = libs.versions.androidTargetSdk.get().toInt()
-        applicationId = "com.sd.demo.comopse_gesture"
+        applicationId = "com.sd.demo.compose_gesture"
         versionCode = 1
         versionName = "1.0"
 

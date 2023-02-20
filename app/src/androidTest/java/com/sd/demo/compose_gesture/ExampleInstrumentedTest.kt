@@ -1,4 +1,4 @@
-package com.sd.demo.comopse_gesture
+package com.sd.demo.compose_gesture
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
