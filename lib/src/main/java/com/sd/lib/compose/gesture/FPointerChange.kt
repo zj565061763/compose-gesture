@@ -89,7 +89,7 @@ interface FPointerChangeScope : FGestureScope {
 
     var enableVelocity: Boolean
 
-    fun getPointerVelocity(pointerId: PointerId): Velocity
+    fun getPointerVelocity(pointerId: PointerId): Velocity?
 }
 
 private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope {
@@ -104,8 +104,8 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
 
     override var enableVelocity: Boolean = false
 
-    override fun getPointerVelocity(pointerId: PointerId): Velocity {
-        return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity() ?: Velocity.Zero
+    override fun getPointerVelocity(pointerId: PointerId): Velocity? {
+        return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity()
     }
 
     fun onDown(input: PointerInputChange) {
