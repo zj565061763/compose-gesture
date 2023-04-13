@@ -3,7 +3,7 @@ package com.sd.demo.compose_gesture
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.gestures.forEachGesture
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -35,14 +35,12 @@ private fun SampleAwait(
         modifier = modifier
             .fillMaxSize()
             .pointerInput(Unit) {
-                forEachGesture {
-                    awaitPointerEventScope {
-                        fAwaitFirstDown()
-                        logMsg { "fAwaitFirstDown" }
+                awaitEachGesture {
+                    fAwaitFirstDown()
+                    logMsg { "fAwaitFirstDown" }
 
-                        fAwaitAllPointersUp()
-                        logMsg { "fAwaitAllPointersUp" }
-                    }
+                    fAwaitAllPointersUp()
+                    logMsg { "fAwaitAllPointersUp" }
                 }
             }
     )
