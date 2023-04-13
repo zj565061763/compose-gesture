@@ -52,10 +52,12 @@ fun Modifier.fPointerChange(
                                 scopeImpl.onDown(input)
                                 onDown?.invoke(scopeImpl, input)
                             }
+
                             input.fChangedToUp(requireUnconsumedUp) -> {
                                 onUp?.invoke(scopeImpl, input)
                                 scopeImpl.onUpAfter(input)
                             }
+
                             input.fPositionChanged(requireUnconsumedMove) -> {
                                 if (hasDown) {
                                     if (!pastTouchSlop) {
@@ -116,7 +118,11 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
         } else null
 
         _pointerHolder[input.id] = PointerInfo(input, velocityTracker)
-        _maxPointerCount++
+        _pointerHolder.size.let { count ->
+            if (_maxPointerCount < count) {
+                _maxPointerCount = count
+            }
+        }
     }
 
     fun onUpAfter(input: PointerInputChange) {
