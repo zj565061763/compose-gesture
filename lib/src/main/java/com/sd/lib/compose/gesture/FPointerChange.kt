@@ -1,7 +1,7 @@
 package com.sd.lib.compose.gesture
 
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.calculatePan
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -28,58 +28,56 @@ fun Modifier.fPointerChange(
     val scopeImpl = remember { FPointerChangeScopeImpl() }
 
     pointerInput(Unit) {
-        forEachGesture {
-            awaitPointerEventScope {
-                scopeImpl.reset()
+        awaitEachGesture {
+            scopeImpl.reset()
 
-                val touchSlop = viewConfiguration.touchSlop
-                var pastTouchSlop = false
-                var pan = Offset.Zero
+            val touchSlop = viewConfiguration.touchSlop
+            var pastTouchSlop = false
+            var pan = Offset.Zero
 
-                do {
-                    val event = awaitPointerEvent(pass)
-                    scopeImpl.setCurrentEvent(event)
+            do {
+                val event = awaitPointerEvent(pass)
+                scopeImpl.setCurrentEvent(event)
 
-                    val hasDown = event.fHasDownPointer()
+                val hasDown = event.fHasDownPointer()
 
-                    for (input in event.changes) {
-                        when {
-                            input.fChangedToDown(requireUnconsumedDown) -> {
-                                if (scopeImpl.maxPointerCount == 0) {
-                                    onStart?.invoke(scopeImpl)
-                                    if (scopeImpl.isGestureCanceled) break
+                for (input in event.changes) {
+                    when {
+                        input.fChangedToDown(requireUnconsumedDown) -> {
+                            if (scopeImpl.maxPointerCount == 0) {
+                                onStart?.invoke(scopeImpl)
+                                if (scopeImpl.isGestureCanceled) break
+                            }
+                            scopeImpl.onDown(input)
+                            onDown?.invoke(scopeImpl, input)
+                        }
+
+                        input.fChangedToUp(requireUnconsumedUp) -> {
+                            onUp?.invoke(scopeImpl, input)
+                            scopeImpl.onUpAfter(input)
+                        }
+
+                        input.fPositionChanged(requireUnconsumedMove) -> {
+                            if (hasDown) {
+                                if (!pastTouchSlop) {
+                                    pan += event.calculatePan()
+                                    if (pan.getDistance() > touchSlop) {
+                                        pastTouchSlop = true
+                                    }
                                 }
-                                scopeImpl.onDown(input)
-                                onDown?.invoke(scopeImpl, input)
-                            }
-
-                            input.fChangedToUp(requireUnconsumedUp) -> {
-                                onUp?.invoke(scopeImpl, input)
-                                scopeImpl.onUpAfter(input)
-                            }
-
-                            input.fPositionChanged(requireUnconsumedMove) -> {
-                                if (hasDown) {
-                                    if (!pastTouchSlop) {
-                                        pan += event.calculatePan()
-                                        if (pan.getDistance() > touchSlop) {
-                                            pastTouchSlop = true
-                                        }
-                                    }
-                                    if (pastTouchSlop) {
-                                        scopeImpl.onMove(input)
-                                        onMove?.invoke(scopeImpl, input)
-                                    }
+                                if (pastTouchSlop) {
+                                    scopeImpl.onMove(input)
+                                    onMove?.invoke(scopeImpl, input)
                                 }
                             }
                         }
                     }
+                }
 
-                    if (scopeImpl.isGestureCanceled) break
-                } while (hasDown)
+                if (scopeImpl.isGestureCanceled) break
+            } while (hasDown)
 
-                onFinish?.invoke(scopeImpl)
-            }
+            onFinish?.invoke(scopeImpl)
         }
     }
 }
