@@ -229,7 +229,7 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
             VelocityTracker().apply { this.addPosition(input.uptimeMillis, input.position) }
         } else null
 
-        _pointerHolder[input.id] = PointerInfo(input, velocityTracker)
+        _pointerHolder[input.id] = PointerInfo(velocityTracker)
         _pointerHolder.size.let { count ->
             if (_maxPointerCount < count) {
                 _maxPointerCount = count
@@ -260,7 +260,6 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
     }
 
     private data class PointerInfo(
-        val change: PointerInputChange,
         val velocityTracker: VelocityTracker?,
     )
 }
