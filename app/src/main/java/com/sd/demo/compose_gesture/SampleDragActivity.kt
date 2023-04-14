@@ -41,10 +41,10 @@ fun SampleDrag(
                 onStart = {
                     calculatePan = true
                 },
-                onMove = {
-                    logMsg { "onMove pan:$pan id:${it.id}" }
+                onCalculate = {
+                    logMsg { "onCalculate pan:$pan" }
                     offset += pan
-                }
+                },
             )
     ) {
         Image(
