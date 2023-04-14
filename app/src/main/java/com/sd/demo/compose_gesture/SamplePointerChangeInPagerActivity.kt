@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.positionChange
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointerChange
 
@@ -41,8 +40,7 @@ private fun SamplePointerChangeInPager(
                 .fillMaxSize()
                 .fPointerChange(
                     onMove = {
-                        val change = it.positionChange()
-                        logMsg { "onMove change:$change" }
+                        logMsg { "onMove" }
 //                        it.consume()
                     },
                 )
