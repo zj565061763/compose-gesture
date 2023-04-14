@@ -29,17 +29,18 @@ fun Modifier.fPointerChange(
 
     pointerInput(Unit) {
         awaitEachGesture {
-            scopeImpl.reset()
-
             val touchSlop = viewConfiguration.touchSlop
             var pastTouchSlop = false
             var pan = Offset.Zero
 
-            do {
+            scopeImpl.reset()
+            while (true) {
                 val event = awaitPointerEvent(pass)
                 scopeImpl.setCurrentEvent(event)
 
+                var hasDown = false
                 for (input in event.changes) {
+                    if (input.pressed) hasDown = true
                     when {
                         input.fChangedToDown(requireUnconsumedDown) -> {
                             if (scopeImpl.maxPointerCount == 0) {
@@ -71,7 +72,8 @@ fun Modifier.fPointerChange(
                 }
 
                 if (scopeImpl.isGestureCanceled) break
-            } while (event.fHasDownPointer())
+                if (!hasDown) break
+            }
 
             onFinish?.invoke(scopeImpl)
         }
