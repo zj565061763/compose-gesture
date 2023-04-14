@@ -39,8 +39,6 @@ fun Modifier.fPointerChange(
                 val event = awaitPointerEvent(pass)
                 scopeImpl.setCurrentEvent(event)
 
-                val hasDown = event.fHasDownPointer()
-
                 for (input in event.changes) {
                     when {
                         input.fChangedToDown(requireUnconsumedDown) -> {
@@ -58,24 +56,22 @@ fun Modifier.fPointerChange(
                         }
 
                         input.fPositionChanged(requireUnconsumedMove) -> {
-                            if (hasDown) {
-                                if (!pastTouchSlop) {
-                                    pan += event.calculatePan()
-                                    if (pan.getDistance() > touchSlop) {
-                                        pastTouchSlop = true
-                                    }
+                            if (!pastTouchSlop) {
+                                pan += event.calculatePan()
+                                if (pan.getDistance() > touchSlop) {
+                                    pastTouchSlop = true
                                 }
-                                if (pastTouchSlop) {
-                                    scopeImpl.onMove(input)
-                                    onMove?.invoke(scopeImpl, input)
-                                }
+                            }
+                            if (pastTouchSlop) {
+                                scopeImpl.onMove(input)
+                                onMove?.invoke(scopeImpl, input)
                             }
                         }
                     }
                 }
 
                 if (scopeImpl.isGestureCanceled) break
-            } while (hasDown)
+            } while (event.fHasDownPointer())
 
             onFinish?.invoke(scopeImpl)
         }
