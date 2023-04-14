@@ -34,6 +34,7 @@ private fun Sample(
 ) {
     var offset by remember { mutableStateOf(Offset.Zero) }
     var scale by remember { mutableStateOf(1f) }
+    var rotation by remember { mutableStateOf(0f) }
 
     Box(
         modifier = modifier
@@ -42,17 +43,19 @@ private fun Sample(
                 onStart = {
                     calculatePan = true
                     calculateZoom = true
+                    calculateRotation = true
                 },
                 onCalculate = {
-                    logMsg { "onCalculate pan:$pan zoom:$zoom" }
+                    logMsg { "onCalculate pan:${this.pan} zoom:${this.zoom} rotation:${this.rotation}" }
 
                     if ((scale < 0.3f && zoom < 1f) || (scale > 5f && zoom > 1f)) {
                         cancelGesture()
                         return@fPointerChange
                     }
 
-                    offset += pan
-                    scale *= zoom
+                    offset += this.pan
+                    scale *= this.zoom
+                    rotation += this.rotation
                 },
             ),
         contentAlignment = Alignment.Center,
@@ -68,6 +71,7 @@ private fun Sample(
                     translationY = offset.y
                     scaleX = scale
                     scaleY = scale
+                    rotationZ = rotation
                 }
         )
     }
