@@ -36,16 +36,16 @@ private fun SamplePointerChange(
                     logMsg { "onStart event:$currentEvent" }
                 },
                 onDown = {
-                    logMsg { "onDown pointerCount:$pointerCount id:${it.id} changes:${currentEvent?.changes?.size}" }
+                    logMsg { "onDown pointerCount:$pointerCount id:${it.id}" }
                     if (pointerCount >= 5) {
                         cancelGesture()
                     }
                 },
                 onUp = {
-                    logMsg { "onUp pointerCount:$pointerCount pan:$pan zoom:$zoom rotation:$rotation id:${it.id} changes:${currentEvent?.changes?.size}" }
+                    logMsg { "onUp pointerCount:$pointerCount id:${it.id}" }
                 },
                 onMove = {
-                    logMsg { "onMove id:${it.id} changes:${currentEvent?.changes?.size}" }
+                    logMsg { "onMove pointerCount:$pointerCount id:${it.id} pan:$pan zoom:$zoom rotation:$rotation" }
                 },
                 onFinish = {
                     logMsg { "onFinish maxPointerCount:$maxPointerCount" }
