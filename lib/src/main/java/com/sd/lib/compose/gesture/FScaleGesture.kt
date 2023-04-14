@@ -11,6 +11,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import kotlin.math.abs
 
+@Deprecated("")
 fun Modifier.fScaleGesture(
     onStart: (FScaleGestureScope.() -> Unit)? = null,
     onFinish: (FScaleGestureScope.() -> Unit)? = null,
