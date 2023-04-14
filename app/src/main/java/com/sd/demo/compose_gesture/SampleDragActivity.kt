@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,10 +38,12 @@ fun SampleDrag(
         modifier = modifier
             .fillMaxSize()
             .fPointerChange(
+                onStart = {
+                    calculatePan = true
+                },
                 onMove = {
-                    val change = currentEvent!!.calculatePan()
-                    logMsg { "drag change:$change" }
-                    offset += change
+                    logMsg { "onMove pan:$pan id:${it.id}" }
+                    offset += pan
                 }
             )
     ) {
