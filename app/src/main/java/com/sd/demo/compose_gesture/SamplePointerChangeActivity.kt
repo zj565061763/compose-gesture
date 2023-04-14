@@ -15,14 +15,14 @@ class SamplePointerChangeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                SamplePointerChange()
+                Sample()
             }
         }
     }
 }
 
 @Composable
-private fun SamplePointerChange(
+private fun Sample(
     modifier: Modifier = Modifier,
 ) {
     Box(

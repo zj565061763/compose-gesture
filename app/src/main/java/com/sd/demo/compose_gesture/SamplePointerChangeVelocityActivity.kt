@@ -15,14 +15,14 @@ class SamplePointerChangeVelocityActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                SampleVelocityTracker()
+                Sample()
             }
         }
     }
 }
 
 @Composable
-private fun SampleVelocityTracker(
+private fun Sample(
     modifier: Modifier = Modifier,
 ) {
     Box(

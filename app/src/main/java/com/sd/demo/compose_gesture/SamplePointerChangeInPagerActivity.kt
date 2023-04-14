@@ -19,7 +19,7 @@ class SamplePointerChangeInPagerActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                SamplePointerChangeInPager()
+                Sample()
             }
         }
     }
@@ -27,12 +27,12 @@ class SamplePointerChangeInPagerActivity : ComponentActivity() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun SamplePointerChangeInPager(
+private fun Sample(
     modifier: Modifier = Modifier,
 ) {
     HorizontalPager(
-        pageCount = 10,
         modifier = modifier.fillMaxSize(),
+        pageCount = 10,
     ) {
         Box(
             contentAlignment = Alignment.Center,

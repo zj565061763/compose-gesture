@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,21 +22,18 @@ class SampleScaleActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    SampleScale()
-                }
+                Sample()
             }
         }
     }
 }
 
 @Composable
-fun SampleScale(
+private fun Sample(
     modifier: Modifier = Modifier,
 ) {
     var scale by remember { mutableStateOf(1f) }
     Box(
-        contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
             .fScaleGesture(
@@ -55,7 +51,8 @@ fun SampleScale(
                 if (scale < 0.3f && change < 1f) {
                     cancelGesture()
                 }
-            }
+            },
+        contentAlignment = Alignment.Center,
     ) {
         Image(
             painter = painterResource(id = R.drawable.scale),

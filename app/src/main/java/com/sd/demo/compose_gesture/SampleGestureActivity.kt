@@ -36,7 +36,6 @@ private fun Sample(
     var scale by remember { mutableStateOf(1f) }
 
     Box(
-        contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
             .fPointerChange(
@@ -55,7 +54,8 @@ private fun Sample(
                     offset += pan
                     scale *= zoom
                 },
-            )
+            ),
+        contentAlignment = Alignment.Center,
     ) {
         Image(
             painter = painterResource(id = R.drawable.scale),

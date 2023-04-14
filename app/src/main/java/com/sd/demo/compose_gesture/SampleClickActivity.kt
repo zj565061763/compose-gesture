@@ -15,14 +15,14 @@ class SampleClickActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                SampleClick()
+                Sample()
             }
         }
     }
 }
 
 @Composable
-private fun SampleClick(
+private fun Sample(
     modifier: Modifier = Modifier,
 ) {
     Box(

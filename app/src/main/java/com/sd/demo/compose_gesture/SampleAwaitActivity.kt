@@ -18,14 +18,14 @@ class SampleAwaitActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                SampleAwait()
+                Sample()
             }
         }
     }
 }
 
 @Composable
-private fun SampleAwait(
+private fun Sample(
     modifier: Modifier = Modifier,
 ) {
     Box(

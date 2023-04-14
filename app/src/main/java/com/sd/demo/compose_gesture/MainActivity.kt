@@ -30,9 +30,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun Sample() {
+private fun Sample(
+    modifier: Modifier = Modifier,
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(state = rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
