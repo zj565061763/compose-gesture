@@ -46,7 +46,7 @@ private fun Sample(
                     calculateRotation = true
                 },
                 onCalculate = {
-                    logMsg { "onCalculate pan:${this.pan} zoom:${this.zoom} rotation:${this.rotation}" }
+                    logMsg { "onCalculate pan:${this.pan} zoom:${this.zoom} rotation:${this.rotation} centroid:${this.centroid}" }
 
                     if ((scale < 0.3f && zoom < 1f) || (scale > 5f && zoom > 1f)) {
                         cancelGesture()
