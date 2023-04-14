@@ -45,7 +45,10 @@ private fun SamplePointerChange(
                     logMsg { "onUp pointerCount:$pointerCount id:${it.id}" }
                 },
                 onMove = {
-                    logMsg { "onMove pointerCount:$pointerCount id:${it.id} pan:$pan zoom:$zoom rotation:$rotation" }
+                    logMsg { "onMove pointerCount:$pointerCount id:${it.id}" }
+                },
+                onCalculate = {
+                    logMsg { "onCalculate pan:$pan zoom:$zoom rotation:$rotation" }
                 },
                 onFinish = {
                     logMsg { "onFinish maxPointerCount:$maxPointerCount" }

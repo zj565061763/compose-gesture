@@ -23,6 +23,7 @@ fun Modifier.fPointerChange(
     onDown: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
     onUp: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
     onMove: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
+    onCalculate: (FPointerChangeScope.() -> Unit)? = null,
     onFinish: (FPointerChangeScope.() -> Unit)? = null,
 ) = composed {
 
@@ -83,6 +84,13 @@ fun Modifier.fPointerChange(
                                 scopeImpl.setRotation(change)
                             }
                         }
+                    }
+
+                    if (calculatePan && (scopeImpl.pan != Offset.Zero) ||
+                        calculateZoom && (scopeImpl.zoom != 1f) ||
+                        calculateRotation && (scopeImpl.rotation != 0f)
+                    ) {
+                        onCalculate?.invoke(scopeImpl)
                     }
                 }
 
