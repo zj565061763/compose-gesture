@@ -1,7 +1,6 @@
 package com.sd.lib.compose.gesture
 
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -12,6 +11,8 @@ import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.unit.Velocity
+import kotlin.math.PI
+import kotlin.math.abs
 
 fun Modifier.fPointerChange(
     requireUnconsumedDown: Boolean = false,
@@ -29,10 +30,16 @@ fun Modifier.fPointerChange(
 
     pointerInput(Unit) {
         awaitEachGesture {
-            var started = false
             val touchSlop = viewConfiguration.touchSlop
             var pastTouchSlop = false
             var pan = Offset.Zero
+            var zoom = 1f
+            var rotation = 0f
+
+            var started = false
+            var calculatePan = false
+            var calculateZoom = false
+            var calculateRotation = false
 
             scopeImpl.reset()
             while (true) {
@@ -40,10 +47,41 @@ fun Modifier.fPointerChange(
                 scopeImpl.setCurrentEvent(event)
 
                 if (started) {
-                    if (!pastTouchSlop) {
-                        pan += event.calculatePan()
-                        if (pan.getDistance() > touchSlop) {
-                            pastTouchSlop = true
+                    if (calculatePan) {
+                        val change = event.calculatePan()
+                        if (!pastTouchSlop) {
+                            pan += change
+                            val panMotion = pan.getDistance()
+                            if (panMotion > touchSlop) pastTouchSlop = true
+                        }
+                        if (pastTouchSlop) {
+                            scopeImpl.setPan(change)
+                        }
+                    }
+
+                    if (calculateZoom || calculateRotation) {
+                        val centroidSize = if (pastTouchSlop) 0f else event.calculateCentroidSize(useCurrent = false)
+                        if (calculateZoom) {
+                            val change = event.calculateZoom()
+                            if (!pastTouchSlop) {
+                                zoom *= change
+                                val zoomMotion = abs(1 - zoom) * centroidSize
+                                if (zoomMotion > touchSlop) pastTouchSlop = true
+                            }
+                            if (pastTouchSlop) {
+                                scopeImpl.setZoom(change)
+                            }
+                        }
+                        if (calculateRotation) {
+                            val change = event.calculateRotation()
+                            if (!pastTouchSlop) {
+                                rotation += change
+                                val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
+                                if (rotationMotion > touchSlop) pastTouchSlop = true
+                            }
+                            if (pastTouchSlop) {
+                                scopeImpl.setRotation(change)
+                            }
                         }
                     }
                 }
@@ -57,6 +95,9 @@ fun Modifier.fPointerChange(
                                 started = true
                                 onStart?.invoke(scopeImpl)
                                 if (scopeImpl.isGestureCanceled) break
+                                calculatePan = scopeImpl.calculatePan
+                                calculateZoom = scopeImpl.calculateZoom
+                                calculateRotation = scopeImpl.calculateRotation
                             }
                             if (started) {
                                 scopeImpl.onDown(input)
@@ -100,27 +141,63 @@ interface FPointerChangeScope : FGestureScope {
     /** 触摸点最多时候的数量 */
     val maxPointerCount: Int
 
+    /** 两次事件之间移动的距离 */
+    val pan: Offset
+
+    /** 两次事件之间移动的缩放 */
+    val zoom: Float
+
+    /** 两次事件之间的旋转 */
+    val rotation: Float
+
     /** 是否开启速率监测 */
     var enableVelocity: Boolean
+
+    /** 是否计算[pan] */
+    var calculatePan: Boolean
+
+    /** 是否计算[zoom] */
+    var calculateZoom: Boolean
+
+    /** 是否计算[rotation] */
+    var calculateRotation: Boolean
 
     /** 获取某个触摸点的速率 */
     fun getPointerVelocity(pointerId: PointerId): Velocity?
 }
 
 private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope {
-    private var _maxPointerCount = 0
     private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
+    private var _maxPointerCount = 0
+    private var _pan = Offset.Zero
+    private var _zoom = 1f
+    private var _rotation = 0f
 
-    override val pointerCount: Int
-        get() = _pointerHolder.size
-
-    override val maxPointerCount: Int
-        get() = _maxPointerCount
+    override val pointerCount: Int get() = _pointerHolder.size
+    override val maxPointerCount: Int get() = _maxPointerCount
+    override val pan: Offset get() = _pan
+    override val zoom: Float get() = _zoom
+    override val rotation: Float get() = _rotation
 
     override var enableVelocity: Boolean = false
+    override var calculatePan: Boolean = false
+    override var calculateZoom: Boolean = false
+    override var calculateRotation: Boolean = false
 
     override fun getPointerVelocity(pointerId: PointerId): Velocity? {
         return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity()
+    }
+
+    fun setPan(value: Offset) {
+        _pan = value
+    }
+
+    fun setZoom(value: Float) {
+        _zoom = value
+    }
+
+    fun setRotation(value: Float) {
+        _rotation = value
     }
 
     fun onDown(input: PointerInputChange) {
@@ -150,9 +227,12 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
 
     override fun reset() {
         super.reset()
-        _maxPointerCount = 0
         _pointerHolder.clear()
+        _maxPointerCount = 0
         enableVelocity = false
+        _pan = Offset.Zero
+        _zoom = 1f
+        _rotation = 0f
     }
 
     private data class PointerInfo(
@@ -160,4 +240,3 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
         val velocityTracker: VelocityTracker?,
     )
 }
-
