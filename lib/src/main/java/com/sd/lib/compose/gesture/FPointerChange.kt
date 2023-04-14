@@ -87,11 +87,16 @@ fun Modifier.fPointerChange(
                         }
                     }
 
-                    if (calculatePan && (scopeImpl.pan != Offset.Zero) ||
-                        calculateZoom && (scopeImpl.zoom != 1f) ||
-                        calculateRotation && (scopeImpl.rotation != 0f)
-                    ) {
-                        onCalculate?.invoke(scopeImpl)
+                    if (pastTouchSlop) {
+                        val centroid = event.calculateCentroid(useCurrent = false)
+                        scopeImpl.setCentroid(centroid)
+                        if (
+                            (calculatePan && scopeImpl.pan != Offset.Zero) ||
+                            (calculateZoom && scopeImpl.zoom != 1f) ||
+                            (calculateRotation && scopeImpl.rotation != 0f)
+                        ) {
+                            onCalculate?.invoke(scopeImpl)
+                        }
                     }
                 }
 
@@ -158,6 +163,9 @@ interface FPointerChangeScope : FGestureScope {
     /** 两次事件之间的旋转 */
     val rotation: Float
 
+    /** 触摸点的中心点 */
+    val centroid: Offset
+
     /** 是否开启速率监测 */
     var enableVelocity: Boolean
 
@@ -180,12 +188,14 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
     private var _pan = Offset.Zero
     private var _zoom = 1f
     private var _rotation = 0f
+    private var _centroid = Offset.Zero
 
     override val pointerCount: Int get() = _pointerHolder.size
     override val maxPointerCount: Int get() = _maxPointerCount
     override val pan: Offset get() = _pan
     override val zoom: Float get() = _zoom
     override val rotation: Float get() = _rotation
+    override val centroid: Offset get() = _centroid
 
     override var enableVelocity: Boolean = false
     override var calculatePan: Boolean = false
@@ -206,6 +216,10 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
 
     fun setRotation(value: Float) {
         _rotation = value
+    }
+
+    fun setCentroid(value: Offset) {
+        _centroid = value
     }
 
     fun onDown(input: PointerInputChange, velocity: Boolean) {
@@ -238,6 +252,7 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
         _pan = Offset.Zero
         _zoom = 1f
         _rotation = 0f
+        _centroid = Offset.Zero
         enableVelocity = false
         calculatePan = false
         calculateZoom = false
