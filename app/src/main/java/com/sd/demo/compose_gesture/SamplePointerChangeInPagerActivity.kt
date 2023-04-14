@@ -42,7 +42,7 @@ private fun SamplePointerChangeInPager(
                 .fPointerChange(
                     onMove = {
                         val change = it.positionChange()
-                        logMsg { "PointerChange onMove change:$change" }
+                        logMsg { "onMove change:$change" }
 //                        it.consume()
                     },
                 )
