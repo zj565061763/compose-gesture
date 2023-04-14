@@ -31,6 +31,7 @@ private fun SampleVelocityTracker(
             .fPointerChange(
                 onStart = {
                     enableVelocity = true
+                    calculatePan = true
                 },
                 onUp = {
                     logMsg { "onUp ${it.id} ${getPointerVelocity(it.id)}" }
