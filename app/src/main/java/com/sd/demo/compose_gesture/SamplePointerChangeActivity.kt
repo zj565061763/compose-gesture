@@ -30,19 +30,22 @@ private fun SamplePointerChange(
             .fillMaxSize()
             .fPointerChange(
                 onStart = {
+                    calculatePan = true
+                    calculateZoom = true
+                    calculateRotation = true
                     logMsg { "onStart event:$currentEvent" }
                 },
                 onDown = {
-                    logMsg { "onDown pointerCount:$pointerCount id:${it.id} changes:${currentEvent?.changes?.size} event:$currentEvent" }
+                    logMsg { "onDown pointerCount:$pointerCount id:${it.id} changes:${currentEvent?.changes?.size}" }
                     if (pointerCount >= 5) {
                         cancelGesture()
                     }
                 },
                 onUp = {
-                    logMsg { "onUp pointerCount:$pointerCount id:${it.id} changes:${currentEvent?.changes?.size} event:$currentEvent " }
+                    logMsg { "onUp pointerCount:$pointerCount pan:$pan zoom:$zoom rotation:$rotation id:${it.id} changes:${currentEvent?.changes?.size}" }
                 },
                 onMove = {
-                    logMsg { "onMove id:${it.id} changes:${currentEvent?.changes?.size} event:$currentEvent" }
+                    logMsg { "onMove id:${it.id} changes:${currentEvent?.changes?.size}" }
                 },
                 onFinish = {
                     logMsg { "onFinish maxPointerCount:$maxPointerCount" }
