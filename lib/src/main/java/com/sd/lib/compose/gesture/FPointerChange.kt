@@ -91,7 +91,7 @@ fun Modifier.fPointerChange(
                     if (input.pressed) hasDown = true
                     when {
                         input.fChangedToDown(requireUnconsumedDown) -> {
-                            if (scopeImpl.maxPointerCount == 0) {
+                            if (!started) {
                                 started = true
                                 onStart?.invoke(scopeImpl)
                                 if (scopeImpl.isGestureCanceled) break
@@ -99,10 +99,8 @@ fun Modifier.fPointerChange(
                                 calculateZoom = scopeImpl.calculateZoom
                                 calculateRotation = scopeImpl.calculateRotation
                             }
-                            if (started) {
-                                scopeImpl.onDown(input)
-                                onDown?.invoke(scopeImpl, input)
-                            }
+                            scopeImpl.onDown(input)
+                            onDown?.invoke(scopeImpl, input)
                         }
 
                         input.fChangedToUp(requireUnconsumedUp) -> {
