@@ -14,17 +14,6 @@ import androidx.compose.ui.Modifier
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointerChange
 
-class SamplePointerChangeInPagerActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                Sample()
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun Sample(
@@ -39,6 +28,9 @@ private fun Sample(
             modifier = modifier
                 .fillMaxSize()
                 .fPointerChange(
+                    onStart = {
+                        calculatePan = true
+                    },
                     onMove = {
                         logMsg { "onMove" }
 //                        it.consume()

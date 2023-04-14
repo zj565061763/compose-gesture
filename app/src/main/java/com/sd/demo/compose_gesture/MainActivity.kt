@@ -43,7 +43,6 @@ private fun Sample(
         Item(clazz = SampleClickActivity::class.java)
         Item(clazz = SamplePointerChangeActivity::class.java)
         Item(clazz = SamplePointerChangeVelocityActivity::class.java)
-        Item(clazz = SamplePointerChangeInPagerActivity::class.java)
         Item(clazz = SampleGestureActivity::class.java)
         Item(clazz = SampleScaleActivity::class.java)
     }

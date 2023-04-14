@@ -37,10 +37,6 @@
             android:exported="false" />
 
         <activity
-            android:name="com.sd.demo.compose_gesture.SamplePointerChangeInPagerActivity"
-            android:exported="false" />
-
-        <activity
             android:name="com.sd.demo.compose_gesture.SampleScaleActivity"
             android:exported="false" />
 
