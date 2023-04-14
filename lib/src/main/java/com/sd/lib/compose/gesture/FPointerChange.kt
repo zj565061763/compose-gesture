@@ -39,6 +39,15 @@ fun Modifier.fPointerChange(
                 val event = awaitPointerEvent(pass)
                 scopeImpl.setCurrentEvent(event)
 
+                if (started) {
+                    if (!pastTouchSlop) {
+                        pan += event.calculatePan()
+                        if (pan.getDistance() > touchSlop) {
+                            pastTouchSlop = true
+                        }
+                    }
+                }
+
                 var hasDown = false
                 for (input in event.changes) {
                     if (input.pressed) hasDown = true
@@ -64,12 +73,6 @@ fun Modifier.fPointerChange(
 
                         input.fPositionChanged(requireUnconsumedMove) -> {
                             if (started) {
-                                if (!pastTouchSlop) {
-                                    pan += event.calculatePan()
-                                    if (pan.getDistance() > touchSlop) {
-                                        pastTouchSlop = true
-                                    }
-                                }
                                 if (pastTouchSlop) {
                                     scopeImpl.onMove(input)
                                     onMove?.invoke(scopeImpl, input)
