@@ -17,22 +17,24 @@ import androidx.compose.ui.res.painterResource
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointerChange
 
-class SampleDragActivity : ComponentActivity() {
+class SampleGestureActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                SampleDrag()
+                Sample()
             }
         }
     }
 }
 
 @Composable
-fun SampleDrag(
+private fun Sample(
     modifier: Modifier = Modifier,
 ) {
     var offset by remember { mutableStateOf(Offset.Zero) }
+    var scale by remember { mutableStateOf(1f) }
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -40,10 +42,18 @@ fun SampleDrag(
             .fPointerChange(
                 onStart = {
                     calculatePan = true
+                    calculateZoom = true
                 },
                 onCalculate = {
-                    logMsg { "onCalculate pan:$pan" }
+                    logMsg { "onCalculate pan:$pan zoom:$zoom" }
+
+                    if ((scale < 0.3f && zoom < 1f) || (scale > 5f && zoom > 1f)) {
+                        cancelGesture()
+                        return@fPointerChange
+                    }
+
                     offset += pan
+                    scale *= zoom
                 },
             )
     ) {
@@ -56,6 +66,8 @@ fun SampleDrag(
                 .graphicsLayer {
                     translationX = offset.x
                     translationY = offset.y
+                    scaleX = scale
+                    scaleY = scale
                 }
         )
     }
