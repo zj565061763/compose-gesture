@@ -38,6 +38,7 @@ fun Modifier.fPointerChange(
             var rotation = 0f
 
             var started = false
+            var enableVelocity = false
             var calculatePan = false
             var calculateZoom = false
             var calculateRotation = false
@@ -103,11 +104,12 @@ fun Modifier.fPointerChange(
                                 started = true
                                 onStart?.invoke(scopeImpl)
                                 if (scopeImpl.isGestureCanceled) break
+                                enableVelocity = scopeImpl.enableVelocity
                                 calculatePan = scopeImpl.calculatePan
                                 calculateZoom = scopeImpl.calculateZoom
                                 calculateRotation = scopeImpl.calculateRotation
                             }
-                            scopeImpl.onDown(input)
+                            scopeImpl.onDown(input, enableVelocity)
                             onDown?.invoke(scopeImpl, input)
                         }
 
@@ -206,10 +208,10 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
         _rotation = value
     }
 
-    fun onDown(input: PointerInputChange) {
+    fun onDown(input: PointerInputChange, velocity: Boolean) {
         if (_pointerHolder.containsKey(input.id)) return
 
-        val velocityTracker = if (enableVelocity) {
+        val velocityTracker = if (velocity) {
             VelocityTracker().apply { this.addPosition(input.uptimeMillis, input.position) }
         } else null
 
@@ -226,19 +228,20 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
     }
 
     fun onMove(input: PointerInputChange) {
-        if (enableVelocity) {
-            _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
-        }
+        _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
     }
 
     override fun reset() {
         super.reset()
         _pointerHolder.clear()
         _maxPointerCount = 0
-        enableVelocity = false
         _pan = Offset.Zero
         _zoom = 1f
         _rotation = 0f
+        enableVelocity = false
+        calculatePan = false
+        calculateZoom = false
+        calculateRotation = false
     }
 
     private data class PointerInfo(
