@@ -79,12 +79,16 @@ fun Modifier.fPointerChange(
 }
 
 interface FPointerChangeScope : FGestureScope {
+    /** 当前触摸点的数量 */
     val pointerCount: Int
 
+    /** 触摸点最多时候的数量 */
     val maxPointerCount: Int
 
+    /** 是否开启速率监测 */
     var enableVelocity: Boolean
 
+    /** 获取某个触摸点的速率 */
     fun getPointerVelocity(pointerId: PointerId): Velocity?
 }
 

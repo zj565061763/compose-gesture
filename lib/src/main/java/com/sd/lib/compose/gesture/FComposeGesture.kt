@@ -66,8 +66,10 @@ internal fun PointerInputChange.fPositionChanged(requireUnconsumed: Boolean): Bo
 }
 
 interface FGestureScope {
+    /** 当前事件 */
     val currentEvent: PointerEvent?
 
+    /** 取消手势 */
     fun cancelGesture()
 }
 
