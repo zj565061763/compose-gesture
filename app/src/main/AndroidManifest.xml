@@ -37,15 +37,11 @@
             android:exported="false" />
 
         <activity
-            android:name="com.sd.demo.compose_gesture.SampleScaleActivity"
-            android:exported="false" />
-
-        <activity
             android:name="com.sd.demo.compose_gesture.SampleGestureActivity"
             android:exported="false" />
 
         <activity
-            android:name="com.sd.demo.compose_gesture.SamplePointerChangeVelocityActivity"
+            android:name="com.sd.demo.compose_gesture.SampleScaleActivity"
             android:exported="false" />
 
     </application>
