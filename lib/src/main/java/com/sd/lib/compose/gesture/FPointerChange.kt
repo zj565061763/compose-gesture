@@ -49,25 +49,31 @@ fun Modifier.fPointerChange(
                                 onStart?.invoke(scopeImpl)
                                 if (scopeImpl.isGestureCanceled) break
                             }
-                            scopeImpl.onDown(input)
-                            onDown?.invoke(scopeImpl, input)
+                            if (started) {
+                                scopeImpl.onDown(input)
+                                onDown?.invoke(scopeImpl, input)
+                            }
                         }
 
                         input.fChangedToUp(requireUnconsumedUp) -> {
-                            onUp?.invoke(scopeImpl, input)
-                            scopeImpl.onUpAfter(input)
+                            if (started) {
+                                onUp?.invoke(scopeImpl, input)
+                                scopeImpl.onUpAfter(input)
+                            }
                         }
 
                         input.fPositionChanged(requireUnconsumedMove) -> {
-                            if (!pastTouchSlop) {
-                                pan += event.calculatePan()
-                                if (pan.getDistance() > touchSlop) {
-                                    pastTouchSlop = true
+                            if (started) {
+                                if (!pastTouchSlop) {
+                                    pan += event.calculatePan()
+                                    if (pan.getDistance() > touchSlop) {
+                                        pastTouchSlop = true
+                                    }
                                 }
-                            }
-                            if (pastTouchSlop) {
-                                scopeImpl.onMove(input)
-                                onMove?.invoke(scopeImpl, input)
+                                if (pastTouchSlop) {
+                                    scopeImpl.onMove(input)
+                                    onMove?.invoke(scopeImpl, input)
+                                }
                             }
                         }
                     }
