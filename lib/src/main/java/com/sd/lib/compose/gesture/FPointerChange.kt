@@ -1,6 +1,11 @@
 package com.sd.lib.compose.gesture
 
-import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.calculateCentroid
+import androidx.compose.foundation.gestures.calculateCentroidSize
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateRotation
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -127,10 +132,8 @@ fun Modifier.fPointerChange(
 
                         input.fPositionChanged(requireUnconsumedMove) -> {
                             if (started) {
-                                if (pastTouchSlop) {
-                                    scopeImpl.onMove(input)
-                                    onMove?.invoke(scopeImpl, input)
-                                }
+                                scopeImpl.onMove(input)
+                                onMove?.invoke(scopeImpl, input)
                             }
                         }
                     }
