@@ -20,10 +20,10 @@ import kotlin.math.PI
 import kotlin.math.abs
 
 fun Modifier.fPointerChange(
+    pass: PointerEventPass = PointerEventPass.Main,
     requireUnconsumedDown: Boolean = false,
     requireUnconsumedUp: Boolean = false,
     requireUnconsumedMove: Boolean = false,
-    pass: PointerEventPass = PointerEventPass.Main,
     onStart: (FPointerChangeScope.() -> Unit)? = null,
     onDown: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
     onUp: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
