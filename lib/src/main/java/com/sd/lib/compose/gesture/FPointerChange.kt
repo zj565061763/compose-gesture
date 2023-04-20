@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputChange
@@ -150,7 +151,10 @@ fun Modifier.fPointerChange(
     }
 }
 
-interface FPointerChangeScope : FGestureScope {
+interface FPointerChangeScope {
+    /** 当前事件 */
+    val currentEvent: PointerEvent?
+
     /** 当前触摸点的数量 */
     val pointerCount: Int
 
@@ -183,9 +187,16 @@ interface FPointerChangeScope : FGestureScope {
 
     /** 获取某个触摸点的速率 */
     fun getPointerVelocity(pointerId: PointerId): Velocity?
+
+    /** 取消手势 */
+    fun cancelGesture()
 }
 
-private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope {
+private class FPointerChangeScopeImpl : FPointerChangeScope {
+    private var _currentEvent: PointerEvent? = null
+    var isGestureCanceled = false
+        private set
+
     private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
     private var _maxPointerCount = 0
     private var _pan = Offset.Zero
@@ -193,6 +204,7 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
     private var _rotation = 0f
     private var _centroid = Offset.Zero
 
+    override val currentEvent: PointerEvent? get() = _currentEvent
     override val pointerCount: Int get() = _pointerHolder.size
     override val maxPointerCount: Int get() = _maxPointerCount
     override val pan: Offset get() = _pan
@@ -207,6 +219,10 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
 
     override fun getPointerVelocity(pointerId: PointerId): Velocity? {
         return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity()
+    }
+
+    fun setCurrentEvent(event: PointerEvent?) {
+        _currentEvent = event
     }
 
     fun setPan(value: Offset) {
@@ -248,8 +264,13 @@ private class FPointerChangeScopeImpl : BaseGestureScope(), FPointerChangeScope 
         _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
     }
 
-    override fun reset() {
-        super.reset()
+    override fun cancelGesture() {
+        isGestureCanceled = true
+    }
+
+    fun reset() {
+        _currentEvent = null
+        isGestureCanceled = false
         _pointerHolder.clear()
         _maxPointerCount = 0
         _pan = Offset.Zero

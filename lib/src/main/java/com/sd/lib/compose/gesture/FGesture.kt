@@ -1,7 +1,6 @@
 package com.sd.lib.compose.gesture
 
 import android.util.Log
-import androidx.annotation.CallSuper
 import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -34,8 +33,7 @@ fun Modifier.fClick(
 }
 
 suspend fun AwaitPointerEventScope.fAwaitFirstDown(
-    requireUnconsumed: Boolean = true,
-    pass: PointerEventPass = PointerEventPass.Main
+    requireUnconsumed: Boolean = true, pass: PointerEventPass = PointerEventPass.Main
 ): PointerInputChange {
     return awaitFirstDown(
         requireUnconsumed = requireUnconsumed,
@@ -91,38 +89,6 @@ internal fun PointerInputChange.fChangedToUp(requireUnconsumed: Boolean): Boolea
 
 internal fun PointerInputChange.fPositionChanged(requireUnconsumed: Boolean): Boolean {
     return if (requireUnconsumed) positionChanged() else positionChangedIgnoreConsumed()
-}
-
-interface FGestureScope {
-    /** 当前事件 */
-    val currentEvent: PointerEvent?
-
-    /** 取消手势 */
-    fun cancelGesture()
-}
-
-internal open class BaseGestureScope : FGestureScope {
-    private var _currentEvent: PointerEvent? = null
-
-    var isGestureCanceled = false
-        private set
-
-    final override val currentEvent: PointerEvent?
-        get() = _currentEvent
-
-    final override fun cancelGesture() {
-        isGestureCanceled = true
-    }
-
-    @CallSuper
-    open fun reset() {
-        _currentEvent = null
-        isGestureCanceled = false
-    }
-
-    fun setCurrentEvent(event: PointerEvent?) {
-        _currentEvent = event
-    }
 }
 
 internal inline fun logMsg(block: () -> Any) {
