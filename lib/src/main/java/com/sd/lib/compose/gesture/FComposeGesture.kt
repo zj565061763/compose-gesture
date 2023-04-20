@@ -70,10 +70,10 @@ fun PointerEvent.fConsume(): Boolean {
     return consume
 }
 
-fun PointerEvent.fConsumePositionChanged(requireUnconsumed: Boolean = true): Boolean {
+fun PointerEvent.fConsumePositionChanged(): Boolean {
     var consume = false
     changes.forEach {
-        if (it.fPositionChanged(requireUnconsumed)) {
+        if (it.positionChanged()) {
             it.consume()
             consume = true
         }
