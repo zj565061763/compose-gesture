@@ -4,16 +4,17 @@ androidCompileSdk = "33"
 androidMinSdk = "21"
 androidTargetSdk = "33"
 
-androidGradlePlugin = "8.0.0"
-kotlin = "1.8.10"
+androidGradlePlugin = "8.0.1"
+kotlin = "1.8.21"
 
-composeBom = "2023.05.00"
-composeCompiler = "1.4.3"
+composeBom = "2023.06.00"
+composeCompiler = "1.4.7"
 
 [libraries]
 
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
+androidx-compose-foundation = { module = "androidx.compose.foundation:foundation" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
