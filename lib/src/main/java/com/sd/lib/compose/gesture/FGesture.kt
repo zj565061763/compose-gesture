@@ -32,15 +32,6 @@ fun Modifier.fClick(
     )
 }
 
-suspend fun AwaitPointerEventScope.fAwaitFirstDown(
-    requireUnconsumed: Boolean = true, pass: PointerEventPass = PointerEventPass.Main
-): PointerInputChange {
-    return awaitFirstDown(
-        requireUnconsumed = requireUnconsumed,
-        pass = pass,
-    )
-}
-
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
     if (currentEvent.fHasDownPointer()) {
         do {
