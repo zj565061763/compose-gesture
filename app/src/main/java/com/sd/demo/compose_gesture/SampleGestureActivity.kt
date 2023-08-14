@@ -49,7 +49,7 @@ private fun Sample(
                     logMsg { "onCalculate pan:${this.pan} zoom:${this.zoom} rotation:${this.rotation} centroid:${this.centroid}" }
 
                     if ((scale < 0.3f && zoom < 1f) || (scale > 5f && zoom > 1f)) {
-                        cancelGesture()
+                        cancelPointer()
                         return@fPointer
                     }
 

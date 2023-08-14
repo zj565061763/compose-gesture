@@ -39,7 +39,7 @@ private fun Sample(
                 onDown = {
                     logMsg { "onDown pointerCount:$pointerCount id:${it.id}" }
                     if (pointerCount >= 5) {
-                        cancelGesture()
+                        cancelPointer()
                     }
                 },
                 onUp = {

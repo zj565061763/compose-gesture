@@ -6,9 +6,7 @@ import androidx.compose.foundation.gestures.calculateCentroidSize
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateRotation
 import androidx.compose.foundation.gestures.calculateZoom
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
@@ -32,122 +30,116 @@ fun Modifier.fPointer(
     onMove: (FPointerScope.(PointerInputChange) -> Unit)? = null,
     onCalculate: (FPointerScope.() -> Unit)? = null,
     onFinish: (FPointerScope.() -> Unit)? = null,
-) = composed {
+) = pointerInput(Unit) {
+    awaitEachGesture {
+        val scopeImpl = FPointerScopeImpl(this)
 
-    val scopeImpl = remember { FPointerScopeImpl() }
+        val touchSlop = viewConfiguration.touchSlop
+        var pastTouchSlop = false
+        var pan = Offset.Zero
+        var zoom = 1f
+        var rotation = 0f
 
-    pointerInput(Unit) {
-        awaitEachGesture {
-            val touchSlop = viewConfiguration.touchSlop
-            var pastTouchSlop = false
-            var pan = Offset.Zero
-            var zoom = 1f
-            var rotation = 0f
+        var started = false
+        var enableVelocity = false
+        var calculatePan = false
+        var calculateZoom = false
+        var calculateRotation = false
 
-            var started = false
-            var enableVelocity = false
-            var calculatePan = false
-            var calculateZoom = false
-            var calculateRotation = false
+        while (true) {
+            val event = awaitPointerEvent(pass)
+            if (started) {
+                if (calculatePan) {
+                    val change = event.calculatePan()
+                    if (!pastTouchSlop) {
+                        pan += change
+                        val panMotion = pan.getDistance()
+                        if (panMotion > touchSlop) pastTouchSlop = true
+                    }
+                    if (pastTouchSlop) {
+                        scopeImpl.setPan(change)
+                    }
+                }
 
-            scopeImpl.reset()
-            scopeImpl.setEventScope(this)
-
-            while (true) {
-                val event = awaitPointerEvent(pass)
-                if (started) {
-                    if (calculatePan) {
-                        val change = event.calculatePan()
+                if (calculateZoom || calculateRotation) {
+                    val centroidSize = if (pastTouchSlop) 0f else event.calculateCentroidSize(useCurrent = false)
+                    if (calculateZoom) {
+                        val change = event.calculateZoom()
                         if (!pastTouchSlop) {
-                            pan += change
-                            val panMotion = pan.getDistance()
-                            if (panMotion > touchSlop) pastTouchSlop = true
+                            zoom *= change
+                            val zoomMotion = abs(1 - zoom) * centroidSize
+                            if (zoomMotion > touchSlop) pastTouchSlop = true
                         }
                         if (pastTouchSlop) {
-                            scopeImpl.setPan(change)
+                            scopeImpl.setZoom(change)
                         }
                     }
-
-                    if (calculateZoom || calculateRotation) {
-                        val centroidSize = if (pastTouchSlop) 0f else event.calculateCentroidSize(useCurrent = false)
-                        if (calculateZoom) {
-                            val change = event.calculateZoom()
-                            if (!pastTouchSlop) {
-                                zoom *= change
-                                val zoomMotion = abs(1 - zoom) * centroidSize
-                                if (zoomMotion > touchSlop) pastTouchSlop = true
-                            }
-                            if (pastTouchSlop) {
-                                scopeImpl.setZoom(change)
-                            }
+                    if (calculateRotation) {
+                        val change = event.calculateRotation()
+                        if (!pastTouchSlop) {
+                            rotation += change
+                            val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
+                            if (rotationMotion > touchSlop) pastTouchSlop = true
                         }
-                        if (calculateRotation) {
-                            val change = event.calculateRotation()
-                            if (!pastTouchSlop) {
-                                rotation += change
-                                val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
-                                if (rotationMotion > touchSlop) pastTouchSlop = true
-                            }
-                            if (pastTouchSlop) {
-                                scopeImpl.setRotation(change)
-                            }
-                        }
-                    }
-
-                    if (pastTouchSlop) {
-                        val centroid = event.calculateCentroid(useCurrent = false)
-                        scopeImpl.setCentroid(centroid)
-                        if (
-                            (calculatePan && scopeImpl.pan != Offset.Zero) ||
-                            (calculateZoom && scopeImpl.zoom != 1f) ||
-                            (calculateRotation && scopeImpl.rotation != 0f)
-                        ) {
-                            onCalculate?.invoke(scopeImpl)
+                        if (pastTouchSlop) {
+                            scopeImpl.setRotation(change)
                         }
                     }
                 }
 
-                var hasDown = false
-                for (input in event.changes) {
-                    if (input.pressed) hasDown = true
-                    when {
-                        input.fChangedToDown(requireUnconsumedDown) -> {
-                            if (!started) {
-                                started = true
-                                onStart?.invoke(scopeImpl)
-                                if (scopeImpl.isCanceled) break
-                                enableVelocity = scopeImpl.enableVelocity
-                                calculatePan = scopeImpl.calculatePan
-                                calculateZoom = scopeImpl.calculateZoom
-                                calculateRotation = scopeImpl.calculateRotation
-                            }
-                            scopeImpl.onDown(input, enableVelocity)
-                            onDown?.invoke(scopeImpl, input)
-                        }
+                if (pastTouchSlop) {
+                    val centroid = event.calculateCentroid(useCurrent = false)
+                    scopeImpl.setCentroid(centroid)
+                    if (
+                        (calculatePan && scopeImpl.pan != Offset.Zero) ||
+                        (calculateZoom && scopeImpl.zoom != 1f) ||
+                        (calculateRotation && scopeImpl.rotation != 0f)
+                    ) {
+                        onCalculate?.invoke(scopeImpl)
+                    }
+                }
+            }
 
-                        input.fChangedToUp(requireUnconsumedUp) -> {
-                            if (started) {
-                                onUp?.invoke(scopeImpl, input)
-                                scopeImpl.onUpAfter(input)
-                            }
+            var hasDown = false
+            for (input in event.changes) {
+                if (input.pressed) hasDown = true
+                when {
+                    input.fChangedToDown(requireUnconsumedDown) -> {
+                        if (!started) {
+                            started = true
+                            onStart?.invoke(scopeImpl)
+                            if (scopeImpl.isCanceled) break
+                            enableVelocity = scopeImpl.enableVelocity
+                            calculatePan = scopeImpl.calculatePan
+                            calculateZoom = scopeImpl.calculateZoom
+                            calculateRotation = scopeImpl.calculateRotation
                         }
+                        scopeImpl.onDown(input, enableVelocity)
+                        onDown?.invoke(scopeImpl, input)
+                    }
 
-                        input.fPositionChanged(requireUnconsumedMove) -> {
-                            if (started) {
-                                scopeImpl.onMove(input)
-                                onMove?.invoke(scopeImpl, input)
-                            }
+                    input.fChangedToUp(requireUnconsumedUp) -> {
+                        if (started) {
+                            onUp?.invoke(scopeImpl, input)
+                            scopeImpl.onUpAfter(input)
+                        }
+                    }
+
+                    input.fPositionChanged(requireUnconsumedMove) -> {
+                        if (started) {
+                            scopeImpl.onMove(input)
+                            onMove?.invoke(scopeImpl, input)
                         }
                     }
                 }
-
-                if (scopeImpl.isCanceled) break
-                if (!hasDown) break
             }
 
-            if (started) {
-                onFinish?.invoke(scopeImpl)
-            }
+            if (scopeImpl.isCanceled) break
+            if (!hasDown) break
+        }
+
+        if (started) {
+            onFinish?.invoke(scopeImpl)
         }
     }
 }
@@ -189,13 +181,13 @@ interface FPointerScope {
     /** 获取某个触摸点的速率 */
     fun getPointerVelocity(pointerId: PointerId): Velocity?
 
-    /** 取消手势 */
-    fun cancelGesture()
+    /** 取消触摸事件监听 */
+    fun cancelPointer()
 }
 
-private class FPointerScopeImpl : FPointerScope {
-    private lateinit var _eventScope: AwaitPointerEventScope
-
+private class FPointerScopeImpl(
+    val eventScope: AwaitPointerEventScope
+) : FPointerScope {
     var isCanceled = false
         private set
 
@@ -206,7 +198,7 @@ private class FPointerScopeImpl : FPointerScope {
     private var _rotation = 0f
     private var _centroid = Offset.Zero
 
-    override val currentEvent: PointerEvent get() = _eventScope.currentEvent
+    override val currentEvent: PointerEvent get() = eventScope.currentEvent
     override val pointerCount: Int get() = _pointerHolder.size
     override val maxPointerCount: Int get() = _maxPointerCount
     override val pan: Offset get() = _pan
@@ -221,10 +213,6 @@ private class FPointerScopeImpl : FPointerScope {
 
     override fun getPointerVelocity(pointerId: PointerId): Velocity? {
         return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity()
-    }
-
-    fun setEventScope(eventScope: AwaitPointerEventScope) {
-        _eventScope = eventScope
     }
 
     fun setPan(value: Offset) {
@@ -266,22 +254,8 @@ private class FPointerScopeImpl : FPointerScope {
         _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
     }
 
-    override fun cancelGesture() {
+    override fun cancelPointer() {
         isCanceled = true
-    }
-
-    fun reset() {
-        isCanceled = false
-        _pointerHolder.clear()
-        _maxPointerCount = 0
-        _pan = Offset.Zero
-        _zoom = 1f
-        _rotation = 0f
-        _centroid = Offset.Zero
-        enableVelocity = false
-        calculatePan = false
-        calculateZoom = false
-        calculateRotation = false
     }
 
     private data class PointerInfo(
