@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
-import com.sd.lib.compose.gesture.fPointerChange
+import com.sd.lib.compose.gesture.fPointer
 
 class SampleGestureActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,7 @@ private fun Sample(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .fPointerChange(
+            .fPointer(
                 onStart = {
                     calculatePan = true
                     calculateZoom = true
@@ -50,7 +50,7 @@ private fun Sample(
 
                     if ((scale < 0.3f && zoom < 1f) || (scale > 5f && zoom > 1f)) {
                         cancelGesture()
-                        return@fPointerChange
+                        return@fPointer
                     }
 
                     offset += this.pan

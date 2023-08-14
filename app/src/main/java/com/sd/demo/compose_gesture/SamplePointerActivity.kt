@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
-import com.sd.lib.compose.gesture.fPointerChange
+import com.sd.lib.compose.gesture.fPointer
 
 class SamplePointerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +28,7 @@ private fun Sample(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .fPointerChange(
+            .fPointer(
                 onStart = {
                     enableVelocity = true
                     calculatePan = true

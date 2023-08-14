@@ -20,20 +20,20 @@ import androidx.compose.ui.unit.Velocity
 import kotlin.math.PI
 import kotlin.math.abs
 
-fun Modifier.fPointerChange(
+fun Modifier.fPointer(
     pass: PointerEventPass = PointerEventPass.Main,
     requireUnconsumedDown: Boolean = false,
     requireUnconsumedUp: Boolean = false,
     requireUnconsumedMove: Boolean = false,
-    onStart: (FPointerChangeScope.() -> Unit)? = null,
-    onDown: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
-    onUp: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
-    onMove: (FPointerChangeScope.(PointerInputChange) -> Unit)? = null,
-    onCalculate: (FPointerChangeScope.() -> Unit)? = null,
-    onFinish: (FPointerChangeScope.() -> Unit)? = null,
+    onStart: (FPointerScope.() -> Unit)? = null,
+    onDown: (FPointerScope.(PointerInputChange) -> Unit)? = null,
+    onUp: (FPointerScope.(PointerInputChange) -> Unit)? = null,
+    onMove: (FPointerScope.(PointerInputChange) -> Unit)? = null,
+    onCalculate: (FPointerScope.() -> Unit)? = null,
+    onFinish: (FPointerScope.() -> Unit)? = null,
 ) = composed {
 
-    val scopeImpl = remember { FPointerChangeScopeImpl() }
+    val scopeImpl = remember { FPointerScopeImpl() }
 
     pointerInput(Unit) {
         awaitEachGesture {
@@ -151,7 +151,7 @@ fun Modifier.fPointerChange(
     }
 }
 
-interface FPointerChangeScope {
+interface FPointerScope {
     /** 当前事件 */
     val currentEvent: PointerEvent?
 
@@ -192,7 +192,7 @@ interface FPointerChangeScope {
     fun cancelGesture()
 }
 
-private class FPointerChangeScopeImpl : FPointerChangeScope {
+private class FPointerScopeImpl : FPointerScope {
     private var _currentEvent: PointerEvent? = null
     var isGestureCanceled = false
         private set
