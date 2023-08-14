@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointerChange
 
-class SamplePointerChangeActivity : ComponentActivity() {
+class SamplePointerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

@@ -41,7 +41,7 @@ private fun Sample(
     ) {
         Item(clazz = SampleAwaitActivity::class.java)
         Item(clazz = SampleClickActivity::class.java)
-        Item(clazz = SamplePointerChangeActivity::class.java)
+        Item(clazz = SamplePointerActivity::class.java)
         Item(clazz = SampleGestureActivity::class.java)
     }
 }

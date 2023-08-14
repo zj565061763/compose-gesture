@@ -33,7 +33,7 @@
             android:exported="false" />
 
         <activity
-            android:name="com.sd.demo.compose_gesture.SamplePointerChangeActivity"
+            android:name="com.sd.demo.compose_gesture.SamplePointerActivity"
             android:exported="false" />
 
         <activity
