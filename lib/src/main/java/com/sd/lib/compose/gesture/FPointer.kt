@@ -209,8 +209,10 @@ private class FPointerScopeImpl(
     override val size: IntSize get() = eventScope.size
     override val currentEvent: PointerEvent get() = eventScope.currentEvent
     override val viewConfiguration: ViewConfiguration get() = eventScope.viewConfiguration
+
     override val pointerCount: Int get() = _pointerHolder.size
     override val maxPointerCount: Int get() = _maxPointerCount
+
     override val pan: Offset get() = _pan
     override val zoom: Float get() = _zoom
     override val rotation: Float get() = _rotation
