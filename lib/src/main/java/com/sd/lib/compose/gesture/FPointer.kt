@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerId
@@ -50,10 +51,10 @@ fun Modifier.fPointer(
             var calculateRotation = false
 
             scopeImpl.reset()
+            scopeImpl.setEventScope(this)
+
             while (true) {
                 val event = awaitPointerEvent(pass)
-                scopeImpl.setCurrentEvent(event)
-
                 if (started) {
                     if (calculatePan) {
                         val change = event.calculatePan()
@@ -114,7 +115,7 @@ fun Modifier.fPointer(
                             if (!started) {
                                 started = true
                                 onStart?.invoke(scopeImpl)
-                                if (scopeImpl.isGestureCanceled) break
+                                if (scopeImpl.isCanceled) break
                                 enableVelocity = scopeImpl.enableVelocity
                                 calculatePan = scopeImpl.calculatePan
                                 calculateZoom = scopeImpl.calculateZoom
@@ -140,7 +141,7 @@ fun Modifier.fPointer(
                     }
                 }
 
-                if (scopeImpl.isGestureCanceled) break
+                if (scopeImpl.isCanceled) break
                 if (!hasDown) break
             }
 
@@ -193,8 +194,9 @@ interface FPointerScope {
 }
 
 private class FPointerScopeImpl : FPointerScope {
-    private var _currentEvent: PointerEvent? = null
-    var isGestureCanceled = false
+    private lateinit var _eventScope: AwaitPointerEventScope
+
+    var isCanceled = false
         private set
 
     private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
@@ -204,7 +206,7 @@ private class FPointerScopeImpl : FPointerScope {
     private var _rotation = 0f
     private var _centroid = Offset.Zero
 
-    override val currentEvent: PointerEvent get() = checkNotNull(_currentEvent)
+    override val currentEvent: PointerEvent get() = _eventScope.currentEvent
     override val pointerCount: Int get() = _pointerHolder.size
     override val maxPointerCount: Int get() = _maxPointerCount
     override val pan: Offset get() = _pan
@@ -221,8 +223,8 @@ private class FPointerScopeImpl : FPointerScope {
         return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity()
     }
 
-    fun setCurrentEvent(event: PointerEvent?) {
-        _currentEvent = event
+    fun setEventScope(eventScope: AwaitPointerEventScope) {
+        _eventScope = eventScope
     }
 
     fun setPan(value: Offset) {
@@ -265,12 +267,11 @@ private class FPointerScopeImpl : FPointerScope {
     }
 
     override fun cancelGesture() {
-        isGestureCanceled = true
+        isCanceled = true
     }
 
     fun reset() {
-        _currentEvent = null
-        isGestureCanceled = false
+        isCanceled = false
         _pointerHolder.clear()
         _maxPointerCount = 0
         _pan = Offset.Zero
