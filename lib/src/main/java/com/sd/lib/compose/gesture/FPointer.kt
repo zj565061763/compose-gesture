@@ -153,7 +153,7 @@ fun Modifier.fPointer(
 
 interface FPointerScope {
     /** 当前事件 */
-    val currentEvent: PointerEvent?
+    val currentEvent: PointerEvent
 
     /** 当前触摸点的数量 */
     val pointerCount: Int
@@ -204,7 +204,7 @@ private class FPointerScopeImpl : FPointerScope {
     private var _rotation = 0f
     private var _centroid = Offset.Zero
 
-    override val currentEvent: PointerEvent? get() = _currentEvent
+    override val currentEvent: PointerEvent get() = checkNotNull(_currentEvent)
     override val pointerCount: Int get() = _pointerHolder.size
     override val maxPointerCount: Int get() = _maxPointerCount
     override val pan: Offset get() = _pan
