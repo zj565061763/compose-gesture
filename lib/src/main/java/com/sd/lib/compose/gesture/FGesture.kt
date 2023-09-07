@@ -1,11 +1,6 @@
 package com.sd.lib.compose.gesture
 
 import android.util.Log
-import androidx.compose.foundation.gestures.PressGestureScope
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -14,23 +9,8 @@ import androidx.compose.ui.input.pointer.changedToDown
 import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.input.pointer.positionChangedIgnoreConsumed
-
-fun Modifier.fClick(
-    onDoubleTap: ((Offset) -> Unit)? = null,
-    onLongPress: ((Offset) -> Unit)? = null,
-    onPress: (suspend PressGestureScope.(Offset) -> Unit)? = null,
-    onTap: ((Offset) -> Unit)? = null,
-) = pointerInput(Unit) {
-    detectTapGestures(
-        onDoubleTap = onDoubleTap,
-        onLongPress = onLongPress,
-        onPress = onPress ?: {},
-        onTap = onTap,
-    )
-}
 
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
     if (currentEvent.fHasDownPointer()) {

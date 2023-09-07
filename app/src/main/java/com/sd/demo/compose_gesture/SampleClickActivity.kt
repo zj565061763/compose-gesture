@@ -29,14 +29,14 @@ private fun Sample(
         modifier = modifier
             .fillMaxSize()
             .fClick(
-                onTap = {
-                    logMsg { "onTap" }
+                onClick = {
+                    logMsg { "onClick" }
                 },
-                onDoubleTap = {
-                    logMsg { "onDoubleTap" }
+                onDoubleClick = {
+                    logMsg { "onDoubleClick" }
                 },
-                onLongPress = {
-                    logMsg { "onLongPress" }
+                onLongClick = {
+                    logMsg { "onLongClick" }
                 },
             )
     )
