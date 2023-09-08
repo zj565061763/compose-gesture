@@ -52,7 +52,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-fun Modifier.fClick(
+fun Modifier.fCombinedClick(
     interactionSource: MutableInteractionSource? = null,
     indication: Indication? = null,
     enabled: Boolean = true,
@@ -64,7 +64,7 @@ fun Modifier.fClick(
     onClick: ((Offset) -> Unit)? = null,
 ) = composed(
     inspectorInfo = debugInspectorInfo {
-        name = "combinedClickable"
+        name = "fCombinedClick"
         properties["indication"] = indication
         properties["interactionSource"] = interactionSource
         properties["enabled"] = enabled
