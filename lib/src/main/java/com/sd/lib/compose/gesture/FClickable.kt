@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
 import androidx.compose.foundation.Indication
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.PressGestureScope
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.hoverable
@@ -51,6 +52,24 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+fun Modifier.fClick(
+    interactionSource: MutableInteractionSource? = null,
+    indication: Indication? = null,
+    enabled: Boolean = true,
+    onClickLabel: String? = null,
+    role: Role? = null,
+    onClick: () -> Unit,
+) = composed {
+    clickable(
+        interactionSource = interactionSource ?: remember { MutableInteractionSource() },
+        indication = indication,
+        enabled = enabled,
+        onClickLabel = onClickLabel,
+        role = role,
+        onClick = onClick,
+    )
+}
 
 fun Modifier.fCombinedClick(
     interactionSource: MutableInteractionSource? = null,
