@@ -352,54 +352,6 @@ private sealed class AbstractClickableNode(
     override fun onPreKeyEvent(event: KeyEvent) = false
 }
 
-private class ClickableSemanticsElement(
-    private val enabled: Boolean,
-    private val role: Role?,
-    private val onLongClickLabel: String?,
-    private val onLongClick: ((Offset) -> Unit)?,
-    private val onClickLabel: String?,
-    private val onClick: (Offset) -> Unit
-) : ModifierNodeElement<ClickableSemanticsNode>() {
-    override fun create() = ClickableSemanticsNode(
-        enabled = enabled,
-        role = role,
-        onLongClickLabel = onLongClickLabel,
-        onLongClick = onLongClick,
-        onClickLabel = onClickLabel,
-        onClick = onClick
-    )
-
-    override fun update(node: ClickableSemanticsNode) {
-        node.update(enabled, onClickLabel, role, onClick, onLongClickLabel, onLongClick)
-    }
-
-    override fun InspectorInfo.inspectableProperties() = Unit
-
-    override fun hashCode(): Int {
-        var result = enabled.hashCode()
-        result = 31 * result + role.hashCode()
-        result = 31 * result + onLongClickLabel.hashCode()
-        result = 31 * result + onLongClick.hashCode()
-        result = 31 * result + onClickLabel.hashCode()
-        result = 31 * result + onClick.hashCode()
-        return result
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is ClickableSemanticsElement) return false
-
-        if (enabled != other.enabled) return false
-        if (role != other.role) return false
-        if (onLongClickLabel != other.onLongClickLabel) return false
-        if (onLongClick != other.onLongClick) return false
-        if (onClickLabel != other.onClickLabel) return false
-        if (onClick != other.onClick) return false
-
-        return true
-    }
-}
-
 private class ClickableSemanticsNode(
     private var enabled: Boolean,
     private var onClickLabel: String?,
