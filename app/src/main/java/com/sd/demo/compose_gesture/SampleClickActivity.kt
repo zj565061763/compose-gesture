@@ -48,6 +48,9 @@ private fun Sample(
                 .weight(1f)
                 .background(Color.DarkGray)
                 .fCombinedClick(
+                    onPress = {
+                        logMsg { "onPress" }
+                    },
                     onClick = {
                         logMsg { "onClick" }
                     },

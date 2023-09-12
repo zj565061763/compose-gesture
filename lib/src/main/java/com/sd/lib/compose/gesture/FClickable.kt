@@ -77,6 +77,7 @@ fun Modifier.fCombinedClick(
     enabled: Boolean = true,
     onClickLabel: String? = null,
     role: Role? = null,
+    onPress: (suspend (Offset) -> Unit)? = null,
     onLongClickLabel: String? = null,
     onLongClick: ((Offset) -> Unit)? = null,
     onDoubleClick: ((Offset) -> Unit)? = null,
@@ -89,6 +90,7 @@ fun Modifier.fCombinedClick(
         properties["enabled"] = enabled
         properties["onClickLabel"] = onClickLabel
         properties["role"] = role
+        properties["onPress"] = onPress
         properties["onClick"] = onClick
         properties["onDoubleClick"] = onDoubleClick
         properties["onLongClick"] = onLongClick
@@ -108,7 +110,8 @@ fun Modifier.fCombinedClick(
                 onClick,
                 onLongClickLabel,
                 onLongClick,
-                onDoubleClick
+                onDoubleClick,
+                onPress,
             )
         )
 }
@@ -121,7 +124,8 @@ private class CombinedClickableElement(
     private val onClick: ((Offset) -> Unit)?,
     private val onLongClickLabel: String?,
     private val onLongClick: ((Offset) -> Unit)?,
-    private val onDoubleClick: ((Offset) -> Unit)?
+    private val onDoubleClick: ((Offset) -> Unit)?,
+    private val onPress: (suspend (Offset) -> Unit)?,
 ) : ModifierNodeElement<CombinedClickableNode>() {
     override fun create() = CombinedClickableNode(
         interactionSource,
@@ -131,7 +135,8 @@ private class CombinedClickableElement(
         onClick,
         onLongClickLabel,
         onLongClick,
-        onDoubleClick
+        onDoubleClick,
+        onPress,
     )
 
     override fun update(node: CombinedClickableNode) {
@@ -143,7 +148,8 @@ private class CombinedClickableElement(
             onClick,
             onLongClickLabel,
             onLongClick,
-            onDoubleClick
+            onDoubleClick,
+            onPress,
         )
     }
 
@@ -164,6 +170,7 @@ private class CombinedClickableElement(
         if (onLongClickLabel != other.onLongClickLabel) return false
         if (onLongClick != other.onLongClick) return false
         if (onDoubleClick != other.onDoubleClick) return false
+        if (onPress != other.onPress) return false
 
         return true
     }
@@ -177,6 +184,7 @@ private class CombinedClickableElement(
         result = 31 * result + (onLongClickLabel?.hashCode() ?: 0)
         result = 31 * result + (onLongClick?.hashCode() ?: 0)
         result = 31 * result + (onDoubleClick?.hashCode() ?: 0)
+        result = 31 * result + (onPress?.hashCode() ?: 0)
         return result
     }
 }
@@ -189,8 +197,9 @@ private class CombinedClickableNode(
     onClick: ((Offset) -> Unit)?,
     onLongClickLabel: String?,
     private var onLongClick: ((Offset) -> Unit)?,
-    onDoubleClick: ((Offset) -> Unit)?
-) : AbstractClickableNode(interactionSource, enabled, onClickLabel, role, onClick) {
+    onDoubleClick: ((Offset) -> Unit)?,
+    onPress: (suspend (Offset) -> Unit)?,
+) : AbstractClickableNode(interactionSource, enabled, onClickLabel, role, onClick, onPress) {
     override val clickableSemanticsNode = delegate(
         ClickableSemanticsNode(
             enabled = enabled,
@@ -209,7 +218,8 @@ private class CombinedClickableNode(
             onClick = onClick,
             interactionData = interactionData,
             onLongClick,
-            onDoubleClick
+            onDoubleClick,
+            onPress,
         )
     )
 
@@ -221,7 +231,8 @@ private class CombinedClickableNode(
         onClick: ((Offset) -> Unit)?,
         onLongClickLabel: String?,
         onLongClick: ((Offset) -> Unit)?,
-        onDoubleClick: ((Offset) -> Unit)?
+        onDoubleClick: ((Offset) -> Unit)?,
+        onPress: (suspend (Offset) -> Unit)?,
     ) {
         // If we have gone from no long click to having a long click or vice versa,
         // cancel any existing press interactions.
@@ -229,7 +240,7 @@ private class CombinedClickableNode(
             disposeInteractionSource()
         }
         this.onLongClick = onLongClick
-        updateCommon(interactionSource, enabled, onClickLabel, role, onClick)
+        updateCommon(interactionSource, enabled, onClickLabel, role, onClick, onPress)
         clickableSemanticsNode.update(
             enabled = enabled,
             role = role,
@@ -243,7 +254,8 @@ private class CombinedClickableNode(
             interactionSource = interactionSource,
             onClick = onClick,
             onLongClick = onLongClick,
-            onDoubleClick = onDoubleClick
+            onDoubleClick = onDoubleClick,
+            onPress = onPress,
         )
     }
 }
@@ -253,7 +265,8 @@ private sealed class AbstractClickableNode(
     private var enabled: Boolean,
     private var onClickLabel: String?,
     private var role: Role?,
-    private var onClick: ((Offset) -> Unit)?
+    private var onClick: ((Offset) -> Unit)?,
+    private var onPress: (suspend (Offset) -> Unit)?,
 ) : DelegatingNode(), PointerInputModifierNode, KeyInputModifierNode {
     abstract val clickablePointerInputNode: AbstractClickablePointerInputNode
     abstract val clickableSemanticsNode: ClickableSemanticsNode
@@ -272,6 +285,7 @@ private sealed class AbstractClickableNode(
         onClickLabel: String?,
         role: Role? = null,
         onClick: ((Offset) -> Unit)?,
+        onPress: (suspend (Offset) -> Unit)?,
     ) {
         if (this.interactionSource != interactionSource) {
             disposeInteractionSource()
@@ -286,6 +300,7 @@ private sealed class AbstractClickableNode(
         this.onClickLabel = onClickLabel
         this.role = role
         this.onClick = onClick
+        this.onPress = onPress
     }
 
     override fun onDetach() {
@@ -324,7 +339,10 @@ private sealed class AbstractClickableNode(
                 if (!interactionData.currentKeyPressInteractions.containsKey(event.key)) {
                     val press = PressInteraction.Press(interactionData.centreOffset)
                     interactionData.currentKeyPressInteractions[event.key] = press
-                    coroutineScope.launch { interactionSource.emit(press) }
+                    coroutineScope.launch {
+                        interactionSource.emit(press)
+                        onPress?.invoke(interactionData.centreOffset)
+                    }
                     true
                 } else {
                     false
@@ -338,7 +356,7 @@ private sealed class AbstractClickableNode(
                             interactionSource.emit(PressInteraction.Release(it))
                         }
                     }
-                    onClick?.invoke(Offset.Zero)
+                    onClick?.invoke(interactionData.centreOffset)
                     true
                 } else {
                     false
@@ -405,7 +423,7 @@ private sealed class AbstractClickablePointerInputNode(
     protected var enabled: Boolean,
     protected var interactionSource: MutableInteractionSource?,
     protected var onClick: ((Offset) -> Unit)?,
-    protected val interactionData: AbstractClickableNode.InteractionData
+    protected val interactionData: AbstractClickableNode.InteractionData,
 ) : DelegatingNode(), ModifierLocalModifierNode, CompositionLocalConsumerModifierNode,
     PointerInputModifierNode {
 
@@ -449,12 +467,13 @@ private class CombinedClickablePointerInputNode(
     onClick: ((Offset) -> Unit)?,
     interactionData: AbstractClickableNode.InteractionData,
     private var onLongClick: ((Offset) -> Unit)?,
-    private var onDoubleClick: ((Offset) -> Unit)?
+    private var onDoubleClick: ((Offset) -> Unit)?,
+    private var onPress: (suspend (Offset) -> Unit)?,
 ) : AbstractClickablePointerInputNode(
     enabled,
     interactionSource,
     onClick,
-    interactionData
+    interactionData,
 ) {
     override suspend fun PointerInputScope.pointerInput() {
         interactionData.centreOffset = size.center.toOffset()
@@ -467,6 +486,7 @@ private class CombinedClickablePointerInputNode(
             } else null,
             onPress = { offset ->
                 if (enabled) {
+                    onPress?.invoke(offset)
                     handlePressInteraction(offset)
                 }
             },
@@ -481,12 +501,14 @@ private class CombinedClickablePointerInputNode(
         interactionSource: MutableInteractionSource,
         onClick: ((Offset) -> Unit)?,
         onLongClick: ((Offset) -> Unit)?,
-        onDoubleClick: ((Offset) -> Unit)?
+        onDoubleClick: ((Offset) -> Unit)?,
+        onPress: (suspend (Offset) -> Unit)?,
     ) {
         // These are captured inside callbacks, not as an input to detectTapGestures,
         // so no need need to reset pointer input handling
         this.onClick = onClick
         this.interactionSource = interactionSource
+        this.onPress = onPress
 
         var changed = false
 
