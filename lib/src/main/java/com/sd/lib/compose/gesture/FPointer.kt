@@ -162,13 +162,7 @@ private class FPointerNode(
         onCalculate: (FPointerScope.() -> Unit)?,
         onFinish: (FPointerScope.() -> Unit)?,
     ) {
-        var changed = false
-
-        if (this.pass != pass) {
-            this.pass = pass
-            changed = true
-        }
-
+        this.pass = pass
         this.requireUnconsumedDown = requireUnconsumedDown
         this.requireUnconsumedUp = requireUnconsumedUp
         this.requireUnconsumedMove = requireUnconsumedMove
@@ -178,8 +172,6 @@ private class FPointerNode(
         this.onMove = onMove
         this.onCalculate = onCalculate
         this.onFinish = onFinish
-
-        if (changed) resetPointerInputHandler()
     }
 
     override fun onPointerEvent(
@@ -193,8 +185,6 @@ private class FPointerNode(
     override fun onCancelPointerInput() {
         pointerInputNode.onCancelPointerInput()
     }
-
-    private fun resetPointerInputHandler() = pointerInputNode.resetPointerInputHandler()
 
     private suspend fun PointerInputScope.pointerInput() {
         awaitEachGesture {
