@@ -351,6 +351,9 @@ interface FPointerScope {
     /** 是否计算[rotation] */
     var calculateRotation: Boolean
 
+    /** 是否被取消[cancelPointer] */
+    val isCanceled: Boolean
+
     /** 获取某个触摸点的速率 */
     fun getPointerVelocity(pointerId: PointerId): Velocity?
 
@@ -361,8 +364,7 @@ interface FPointerScope {
 private class FPointerScopeImpl(
     val eventScope: AwaitPointerEventScope
 ) : FPointerScope {
-    var isCanceled = false
-        private set
+    private var _isCanceled = false
 
     private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
     private var _maxPointerCount = 0
@@ -387,6 +389,7 @@ private class FPointerScopeImpl(
     override var calculatePan: Boolean = false
     override var calculateZoom: Boolean = false
     override var calculateRotation: Boolean = false
+    override val isCanceled: Boolean get() = _isCanceled
 
     override fun getPointerVelocity(pointerId: PointerId): Velocity? {
         return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity()
@@ -432,7 +435,7 @@ private class FPointerScopeImpl(
     }
 
     override fun cancelPointer() {
-        isCanceled = true
+        _isCanceled = true
     }
 
     private data class PointerInfo(
