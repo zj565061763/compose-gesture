@@ -13,8 +13,13 @@ import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
 import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.node.DelegatingNode
+import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.PointerInputModifierNode
+import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.ViewConfiguration
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.Velocity
@@ -32,116 +37,257 @@ fun Modifier.fPointer(
     onMove: (FPointerScope.(PointerInputChange) -> Unit)? = null,
     onCalculate: (FPointerScope.() -> Unit)? = null,
     onFinish: (FPointerScope.() -> Unit)? = null,
-) = pointerInput(Unit) {
-    awaitEachGesture {
-        val scopeImpl = FPointerScopeImpl(this)
+) = this then FPointerElement(
+    pass = pass,
+    requireUnconsumedDown = requireUnconsumedDown,
+    requireUnconsumedUp = requireUnconsumedUp,
+    requireUnconsumedMove = requireUnconsumedMove,
+    onStart = onStart,
+    onDown = onDown,
+    onUp = onUp,
+    onMove = onMove,
+    onCalculate = onCalculate,
+    onFinish = onFinish,
+)
 
-        val touchSlop = viewConfiguration.touchSlop
-        var pastTouchSlop = false
-        var pan = Offset.Zero
-        var zoom = 1f
-        var rotation = 0f
+private class FPointerElement(
+    private var pass: PointerEventPass,
+    private var requireUnconsumedDown: Boolean,
+    private var requireUnconsumedUp: Boolean,
+    private var requireUnconsumedMove: Boolean,
+    private var onStart: (FPointerScope.() -> Unit)?,
+    private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
+    private var onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
+    private var onMove: (FPointerScope.(PointerInputChange) -> Unit)?,
+    private var onCalculate: (FPointerScope.() -> Unit)?,
+    private var onFinish: (FPointerScope.() -> Unit)?,
+) : ModifierNodeElement<FPointerNode>() {
+    override fun create(): FPointerNode {
+        return FPointerNode(
+            pass = pass,
+            requireUnconsumedDown = requireUnconsumedDown,
+            requireUnconsumedUp = requireUnconsumedUp,
+            requireUnconsumedMove = requireUnconsumedMove,
+            onStart = onStart,
+            onDown = onDown,
+            onUp = onUp,
+            onMove = onMove,
+            onCalculate = onCalculate,
+            onFinish = onFinish,
+        )
+    }
 
-        var started = false
-        var enableVelocity = false
-        var calculatePan = false
-        var calculateZoom = false
-        var calculateRotation = false
+    override fun update(node: FPointerNode) {
+        node.update(
+            pass = pass,
+            requireUnconsumedDown = requireUnconsumedDown,
+            requireUnconsumedUp = requireUnconsumedUp,
+            requireUnconsumedMove = requireUnconsumedMove,
+            onStart = onStart,
+            onDown = onDown,
+            onUp = onUp,
+            onMove = onMove,
+            onCalculate = onCalculate,
+            onFinish = onFinish,
+        )
+    }
 
-        while (true) {
-            val event = awaitPointerEvent(pass)
-            if (started) {
-                if (calculatePan) {
-                    val change = event.calculatePan()
-                    if (!pastTouchSlop) {
-                        pan += change
-                        val panMotion = pan.getDistance()
-                        if (panMotion > touchSlop) pastTouchSlop = true
+    override fun hashCode(): Int {
+        var result = pass.hashCode()
+        result = 31 * result + requireUnconsumedDown.hashCode()
+        result = 31 * result + requireUnconsumedUp.hashCode()
+        result = 31 * result + requireUnconsumedMove.hashCode()
+        result = 31 * result + onStart.hashCode()
+        result = 31 * result + onDown.hashCode()
+        result = 31 * result + onUp.hashCode()
+        result = 31 * result + onMove.hashCode()
+        result = 31 * result + onCalculate.hashCode()
+        result = 31 * result + onFinish.hashCode()
+        return result
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is FPointerElement) return false
+        return pass == other.pass &&
+                requireUnconsumedDown == other.requireUnconsumedDown &&
+                requireUnconsumedUp == other.requireUnconsumedUp &&
+                onStart == other.onStart &&
+                onDown == other.onDown &&
+                onUp == other.onUp &&
+                onMove == other.onMove &&
+                onCalculate == other.onCalculate &&
+                onFinish == other.onFinish
+    }
+
+    override fun InspectorInfo.inspectableProperties() {
+        name = "fPointer"
+        properties["pass"] = pass
+        properties["requireUnconsumedDown"] = requireUnconsumedDown
+        properties["requireUnconsumedUp"] = requireUnconsumedUp
+        properties["requireUnconsumedMove"] = requireUnconsumedMove
+        properties["onStart"] = onStart
+        properties["onDown"] = onDown
+        properties["onUp"] = onUp
+        properties["onMove"] = onMove
+        properties["onCalculate"] = onCalculate
+        properties["onFinish"] = onFinish
+    }
+}
+
+private class FPointerNode(
+    private var pass: PointerEventPass,
+    private var requireUnconsumedDown: Boolean,
+    private var requireUnconsumedUp: Boolean,
+    private var requireUnconsumedMove: Boolean,
+    private var onStart: (FPointerScope.() -> Unit)?,
+    private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
+    private var onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
+    private var onMove: (FPointerScope.(PointerInputChange) -> Unit)?,
+    private var onCalculate: (FPointerScope.() -> Unit)?,
+    private var onFinish: (FPointerScope.() -> Unit)?,
+) : DelegatingNode(), PointerInputModifierNode {
+
+    private val pointerInputNode = delegate(SuspendingPointerInputModifierNode { pointerInput() })
+
+    fun update(
+        pass: PointerEventPass,
+        requireUnconsumedDown: Boolean,
+        requireUnconsumedUp: Boolean,
+        requireUnconsumedMove: Boolean,
+        onStart: (FPointerScope.() -> Unit)?,
+        onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
+        onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
+        onMove: (FPointerScope.(PointerInputChange) -> Unit)?,
+        onCalculate: (FPointerScope.() -> Unit)?,
+        onFinish: (FPointerScope.() -> Unit)?,
+    ) {
+        // TODO update
+    }
+
+    override fun onPointerEvent(
+        pointerEvent: PointerEvent,
+        pass: PointerEventPass,
+        bounds: IntSize
+    ) {
+        pointerInputNode.onPointerEvent(pointerEvent, pass, bounds)
+    }
+
+    override fun onCancelPointerInput() {
+        pointerInputNode.onCancelPointerInput()
+    }
+
+    private suspend fun PointerInputScope.pointerInput() {
+        awaitEachGesture {
+            val scopeImpl = FPointerScopeImpl(this)
+
+            val touchSlop = viewConfiguration.touchSlop
+            var pastTouchSlop = false
+            var pan = Offset.Zero
+            var zoom = 1f
+            var rotation = 0f
+
+            var started = false
+            var enableVelocity = false
+            var calculatePan = false
+            var calculateZoom = false
+            var calculateRotation = false
+
+            while (true) {
+                val event = awaitPointerEvent(pass)
+                if (started) {
+                    if (calculatePan) {
+                        val change = event.calculatePan()
+                        if (!pastTouchSlop) {
+                            pan += change
+                            val panMotion = pan.getDistance()
+                            if (panMotion > touchSlop) pastTouchSlop = true
+                        }
+                        if (pastTouchSlop) {
+                            scopeImpl.setPan(change)
+                        }
                     }
+
+                    if (calculateZoom || calculateRotation) {
+                        val centroidSize = if (pastTouchSlop) 0f else event.calculateCentroidSize(useCurrent = false)
+                        if (calculateZoom) {
+                            val change = event.calculateZoom()
+                            if (!pastTouchSlop) {
+                                zoom *= change
+                                val zoomMotion = abs(1 - zoom) * centroidSize
+                                if (zoomMotion > touchSlop) pastTouchSlop = true
+                            }
+                            if (pastTouchSlop) {
+                                scopeImpl.setZoom(change)
+                            }
+                        }
+                        if (calculateRotation) {
+                            val change = event.calculateRotation()
+                            if (!pastTouchSlop) {
+                                rotation += change
+                                val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
+                                if (rotationMotion > touchSlop) pastTouchSlop = true
+                            }
+                            if (pastTouchSlop) {
+                                scopeImpl.setRotation(change)
+                            }
+                        }
+                    }
+
                     if (pastTouchSlop) {
-                        scopeImpl.setPan(change)
-                    }
-                }
-
-                if (calculateZoom || calculateRotation) {
-                    val centroidSize = if (pastTouchSlop) 0f else event.calculateCentroidSize(useCurrent = false)
-                    if (calculateZoom) {
-                        val change = event.calculateZoom()
-                        if (!pastTouchSlop) {
-                            zoom *= change
-                            val zoomMotion = abs(1 - zoom) * centroidSize
-                            if (zoomMotion > touchSlop) pastTouchSlop = true
-                        }
-                        if (pastTouchSlop) {
-                            scopeImpl.setZoom(change)
-                        }
-                    }
-                    if (calculateRotation) {
-                        val change = event.calculateRotation()
-                        if (!pastTouchSlop) {
-                            rotation += change
-                            val rotationMotion = abs(rotation * PI.toFloat() * centroidSize / 180f)
-                            if (rotationMotion > touchSlop) pastTouchSlop = true
-                        }
-                        if (pastTouchSlop) {
-                            scopeImpl.setRotation(change)
+                        val centroid = event.calculateCentroid(useCurrent = false)
+                        scopeImpl.setCentroid(centroid)
+                        if (
+                            (calculatePan && scopeImpl.pan != Offset.Zero) ||
+                            (calculateZoom && scopeImpl.zoom != 1f) ||
+                            (calculateRotation && scopeImpl.rotation != 0f)
+                        ) {
+                            onCalculate?.invoke(scopeImpl)
                         }
                     }
                 }
 
-                if (pastTouchSlop) {
-                    val centroid = event.calculateCentroid(useCurrent = false)
-                    scopeImpl.setCentroid(centroid)
-                    if (
-                        (calculatePan && scopeImpl.pan != Offset.Zero) ||
-                        (calculateZoom && scopeImpl.zoom != 1f) ||
-                        (calculateRotation && scopeImpl.rotation != 0f)
-                    ) {
-                        onCalculate?.invoke(scopeImpl)
+                var hasDown = false
+                for (input in event.changes) {
+                    if (input.pressed) hasDown = true
+                    when {
+                        input.fChangedToDown(requireUnconsumedDown) -> {
+                            if (!started) {
+                                started = true
+                                onStart?.invoke(scopeImpl)
+                                if (scopeImpl.isCanceled) break
+                                enableVelocity = scopeImpl.enableVelocity
+                                calculatePan = scopeImpl.calculatePan
+                                calculateZoom = scopeImpl.calculateZoom
+                                calculateRotation = scopeImpl.calculateRotation
+                            }
+                            scopeImpl.onDown(input, enableVelocity)
+                            onDown?.invoke(scopeImpl, input)
+                        }
+
+                        input.fChangedToUp(requireUnconsumedUp) -> {
+                            if (started) {
+                                onUp?.invoke(scopeImpl, input)
+                                scopeImpl.onUpAfter(input)
+                            }
+                        }
+
+                        input.fPositionChanged(requireUnconsumedMove) -> {
+                            if (started) {
+                                scopeImpl.onMove(input)
+                                onMove?.invoke(scopeImpl, input)
+                            }
+                        }
                     }
                 }
+
+                if (scopeImpl.isCanceled) break
+                if (!hasDown) break
             }
 
-            var hasDown = false
-            for (input in event.changes) {
-                if (input.pressed) hasDown = true
-                when {
-                    input.fChangedToDown(requireUnconsumedDown) -> {
-                        if (!started) {
-                            started = true
-                            onStart?.invoke(scopeImpl)
-                            if (scopeImpl.isCanceled) break
-                            enableVelocity = scopeImpl.enableVelocity
-                            calculatePan = scopeImpl.calculatePan
-                            calculateZoom = scopeImpl.calculateZoom
-                            calculateRotation = scopeImpl.calculateRotation
-                        }
-                        scopeImpl.onDown(input, enableVelocity)
-                        onDown?.invoke(scopeImpl, input)
-                    }
-
-                    input.fChangedToUp(requireUnconsumedUp) -> {
-                        if (started) {
-                            onUp?.invoke(scopeImpl, input)
-                            scopeImpl.onUpAfter(input)
-                        }
-                    }
-
-                    input.fPositionChanged(requireUnconsumedMove) -> {
-                        if (started) {
-                            scopeImpl.onMove(input)
-                            onMove?.invoke(scopeImpl, input)
-                        }
-                    }
-                }
+            if (started) {
+                onFinish?.invoke(scopeImpl)
             }
-
-            if (scopeImpl.isCanceled) break
-            if (!hasDown) break
-        }
-
-        if (started) {
-            onFinish?.invoke(scopeImpl)
         }
     }
 }
