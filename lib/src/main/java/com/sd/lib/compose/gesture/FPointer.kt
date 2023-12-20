@@ -276,7 +276,7 @@ private class FPointerNode(
                                 calculateZoom = scopeImpl.calculateZoom
                                 calculateRotation = scopeImpl.calculateRotation
                             }
-                            scopeImpl.onDown(input, enableVelocity)
+                            scopeImpl.onDownBefore(input, enableVelocity)
                             onDown?.invoke(scopeImpl, input)
                         }
 
@@ -289,7 +289,7 @@ private class FPointerNode(
 
                         input.fPositionChanged(requireUnconsumedMove) -> {
                             if (started) {
-                                scopeImpl.onMove(input)
+                                scopeImpl.onMoveBefore(input)
                                 onMove?.invoke(scopeImpl, input)
                             }
                         }
@@ -407,7 +407,7 @@ private class FPointerScopeImpl(
         _centroid = value
     }
 
-    fun onDown(input: PointerInputChange, velocity: Boolean) {
+    fun onDownBefore(input: PointerInputChange, velocity: Boolean) {
         if (_pointerHolder.containsKey(input.id)) return
 
         val velocityTracker = if (velocity) {
@@ -426,7 +426,7 @@ private class FPointerScopeImpl(
         _pointerHolder.remove(input.id)
     }
 
-    fun onMove(input: PointerInputChange) {
+    fun onMoveBefore(input: PointerInputChange) {
         _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
     }
 
