@@ -15,6 +15,12 @@ import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
+import androidx.compose.ui.input.pointer.changedToDown
+import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
+import androidx.compose.ui.input.pointer.changedToUp
+import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
+import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.input.pointer.positionChangedIgnoreConsumed
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
@@ -431,4 +437,16 @@ private class FPointerScopeImpl(
     private data class PointerInfo(
         val velocityTracker: VelocityTracker?,
     )
+}
+
+private fun PointerInputChange.fChangedToDown(requireUnconsumed: Boolean): Boolean {
+    return if (requireUnconsumed) changedToDown() else changedToDownIgnoreConsumed()
+}
+
+private fun PointerInputChange.fChangedToUp(requireUnconsumed: Boolean): Boolean {
+    return if (requireUnconsumed) changedToUp() else changedToUpIgnoreConsumed()
+}
+
+private fun PointerInputChange.fPositionChanged(requireUnconsumed: Boolean): Boolean {
+    return if (requireUnconsumed) positionChanged() else positionChangedIgnoreConsumed()
 }
