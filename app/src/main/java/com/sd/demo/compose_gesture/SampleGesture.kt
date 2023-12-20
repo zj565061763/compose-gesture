@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointer
 
-class SampleGestureActivity : ComponentActivity() {
+class SampleGesture : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

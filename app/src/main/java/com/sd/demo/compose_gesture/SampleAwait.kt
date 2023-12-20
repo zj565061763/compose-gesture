@@ -13,7 +13,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fAwaitAllPointersUp
 
-class SampleAwaitActivity : ComponentActivity() {
+class SampleAwait : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

@@ -6,16 +6,19 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,40 +26,44 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                Sample()
+                Content(
+                    listActivity = listOf(
+                        SampleAwait::class.java,
+                        SamplePointer::class.java,
+                        SampleGesture::class.java,
+                    ),
+                    onClickActivity = {
+                        startActivity(Intent(this, it))
+                    },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun Sample(
-    modifier: Modifier = Modifier,
+private fun Content(
+    listActivity: List<Class<out Activity>>,
+    onClickActivity: (Class<out Activity>) -> Unit,
 ) {
-    Column(
-        modifier = modifier
+    val onClickActivityUpdated by rememberUpdatedState(onClickActivity)
+    LazyColumn(
+        modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(state = rememberScrollState()),
+            .statusBarsPadding(),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Item(clazz = SampleAwaitActivity::class.java)
-        Item(clazz = SampleClickActivity::class.java)
-        Item(clazz = SamplePointerActivity::class.java)
-        Item(clazz = SampleGestureActivity::class.java)
-    }
-}
-
-@Composable
-private fun Item(
-    modifier: Modifier = Modifier,
-    clazz: Class<*>,
-) {
-    val activity = LocalContext.current as Activity
-    Button(
-        onClick = { activity.startActivity(Intent(activity, clazz)) },
-        modifier = modifier,
-    ) {
-        Text(text = clazz.simpleName)
+        items(
+            listActivity,
+            key = { it },
+        ) { item ->
+            Button(
+                onClick = { onClickActivityUpdated(item) }
+            ) {
+                Text(text = item.simpleName)
+            }
+        }
     }
 }
 
