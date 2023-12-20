@@ -364,6 +364,7 @@ private class FPointerScopeImpl(
 
     private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
     private var _maxPointerCount = 0
+
     private var _pan = Offset.Zero
     private var _zoom = 1f
     private var _rotation = 0f
