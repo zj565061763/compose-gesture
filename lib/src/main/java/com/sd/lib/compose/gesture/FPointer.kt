@@ -317,10 +317,10 @@ interface FPointerScope {
     /** 触摸点最多时候的数量 */
     val maxPointerCount: Int
 
-    /** 两次事件之间移动的距离 */
+    /** 两次事件之间的距离 */
     val pan: Offset
 
-    /** 两次事件之间移动的缩放 */
+    /** 两次事件之间的缩放 */
     val zoom: Float
 
     /** 两次事件之间的旋转 */
