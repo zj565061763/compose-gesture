@@ -269,8 +269,10 @@ private class FPointerNode(
                         input.fChangedToDown(requireUnconsumedDown) -> {
                             if (!started) {
                                 started = true
+
                                 onStart?.invoke(scopeImpl)
                                 if (scopeImpl.isCanceled) break
+
                                 enableVelocity = scopeImpl.enableVelocity
                                 calculatePan = scopeImpl.calculatePan
                                 calculateZoom = scopeImpl.calculateZoom
