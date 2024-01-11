@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
 import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.input.pointer.positionChangedIgnoreConsumed
 import androidx.compose.ui.input.pointer.util.VelocityTracker
+import androidx.compose.ui.input.pointer.util.addPointerInputChange
 import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.PointerInputModifierNode
@@ -203,7 +204,6 @@ private class FPointerNode(
             var rotation = 0f
 
             var started = false
-            var enableVelocity = false
             var calculatePan = false
             var calculateZoom = false
             var calculateRotation = false
@@ -273,12 +273,11 @@ private class FPointerNode(
                                 onStart?.invoke(scopeImpl)
                                 if (scopeImpl.isCanceled) break
 
-                                enableVelocity = scopeImpl.enableVelocity
                                 calculatePan = scopeImpl.calculatePan
                                 calculateZoom = scopeImpl.calculateZoom
                                 calculateRotation = scopeImpl.calculateRotation
                             }
-                            scopeImpl.onDownBefore(input, enableVelocity)
+                            scopeImpl.onDownBefore(input)
                             onDown?.invoke(scopeImpl, input)
                         }
 
@@ -337,9 +336,6 @@ interface FPointerScope {
     /** 触摸点的中心点 */
     val centroid: Offset
 
-    /** 是否开启速率监测 */
-    var enableVelocity: Boolean
-
     /** 是否计算[pan] */
     var calculatePan: Boolean
 
@@ -351,6 +347,9 @@ interface FPointerScope {
 
     /** 是否被取消[cancelPointer] */
     val isCanceled: Boolean
+
+    /** 添加速率信息 */
+    fun addVelocityPointer(change: PointerInputChange)
 
     /** 获取某个触摸点的速率 */
     fun getPointerVelocity(pointerId: PointerId): Velocity?
@@ -384,11 +383,15 @@ private class FPointerScopeImpl(
     override val rotation: Float get() = _rotation
     override val centroid: Offset get() = _centroid
 
-    override var enableVelocity: Boolean = false
     override var calculatePan: Boolean = false
     override var calculateZoom: Boolean = false
     override var calculateRotation: Boolean = false
     override val isCanceled: Boolean get() = _isCanceled
+
+    override fun addVelocityPointer(change: PointerInputChange) {
+        val info = _pointerHolder[change.id] ?: return
+        info.getOrCreateVelocityTracker().addPointerInputChange(change)
+    }
 
     override fun getPointerVelocity(pointerId: PointerId): Velocity? {
         return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity()
@@ -410,14 +413,10 @@ private class FPointerScopeImpl(
         _centroid = value
     }
 
-    fun onDownBefore(input: PointerInputChange, velocity: Boolean) {
+    fun onDownBefore(input: PointerInputChange) {
         if (_pointerHolder.containsKey(input.id)) return
 
-        val velocityTracker = if (velocity) {
-            VelocityTracker().apply { this.addPosition(input.uptimeMillis, input.position) }
-        } else null
-
-        _pointerHolder[input.id] = PointerInfo(velocityTracker)
+        _pointerHolder[input.id] = PointerInfo(null)
         _pointerHolder.size.let { count ->
             if (_maxPointerCount < count) {
                 _maxPointerCount = count
@@ -438,8 +437,14 @@ private class FPointerScopeImpl(
     }
 
     private data class PointerInfo(
-        val velocityTracker: VelocityTracker?,
-    )
+        var velocityTracker: VelocityTracker?,
+    ) {
+        fun getOrCreateVelocityTracker(): VelocityTracker {
+            return velocityTracker ?: VelocityTracker().also {
+                velocityTracker = it
+            }
+        }
+    }
 }
 
 private fun PointerInputChange.fChangedToDown(requireUnconsumed: Boolean): Boolean {

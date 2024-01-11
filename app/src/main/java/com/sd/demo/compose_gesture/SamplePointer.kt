@@ -30,7 +30,6 @@ private fun Sample(
             .fillMaxSize()
             .fPointer(
                 onStart = {
-                    enableVelocity = true
                     calculatePan = true
                     calculateZoom = true
                     calculateRotation = true
@@ -47,6 +46,7 @@ private fun Sample(
                 },
                 onMove = {
                     logMsg { "onMove pointerCount:$pointerCount id:${it.id}" }
+                    addVelocityPointer(it)
                 },
                 onCalculate = {
                     logMsg { "onCalculate pan:$pan zoom:$zoom rotation:$rotation" }
