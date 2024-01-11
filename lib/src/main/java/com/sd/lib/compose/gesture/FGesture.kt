@@ -3,7 +3,7 @@ package com.sd.lib.compose.gesture
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.positionChanged
+import androidx.compose.ui.input.pointer.PointerInputChange
 
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
     if (currentEvent.fHasDownPointer()) {
@@ -19,23 +19,12 @@ fun PointerEvent.fDownPointerCount(): Int = changes.fold(0) { acc, input ->
     acc + (if (input.pressed) 1 else 0)
 }
 
-fun PointerEvent.fHasConsumed(): Boolean = changes.any { it.isConsumed }
-
-fun PointerEvent.fConsume(): Boolean {
+fun PointerEvent.fConsume(
+    predicate: (PointerInputChange) -> Boolean,
+): Boolean {
     var consume = false
     changes.forEach {
-        if (!it.isConsumed) {
-            it.consume()
-            consume = true
-        }
-    }
-    return consume
-}
-
-fun PointerEvent.fConsumePositionChanged(): Boolean {
-    var consume = false
-    changes.forEach {
-        if (it.positionChanged()) {
+        if (predicate(it)) {
             it.consume()
             consume = true
         }
