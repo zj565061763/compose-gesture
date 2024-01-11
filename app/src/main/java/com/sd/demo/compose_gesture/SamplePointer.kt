@@ -42,11 +42,11 @@ private fun Sample(
                     }
                 },
                 onUp = {
-                    logMsg { "onUp pointerCount:$pointerCount id:${it.id} velocity:${getPointerVelocity(it.id)}" }
+                    logMsg { "onUp pointerCount:$pointerCount id:${it.id} velocity:${velocityGet(it.id)}" }
                 },
                 onMove = {
                     logMsg { "onMove pointerCount:$pointerCount id:${it.id}" }
-                    addVelocityPointer(it)
+                    velocityAdd(it)
                 },
                 onCalculate = {
                     logMsg { "onCalculate pan:$pan zoom:$zoom rotation:$rotation" }

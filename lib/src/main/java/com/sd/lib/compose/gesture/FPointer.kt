@@ -290,7 +290,6 @@ private class FPointerNode(
 
                         input.fPositionChanged(requireUnconsumedMove) -> {
                             if (started) {
-                                scopeImpl.onMoveBefore(input)
                                 onMove?.invoke(scopeImpl, input)
                             }
                         }
@@ -349,10 +348,10 @@ interface FPointerScope {
     val isCanceled: Boolean
 
     /** 添加速率信息 */
-    fun addVelocityPointer(change: PointerInputChange)
+    fun velocityAdd(change: PointerInputChange)
 
     /** 获取某个触摸点的速率 */
-    fun getPointerVelocity(pointerId: PointerId): Velocity?
+    fun velocityGet(pointerId: PointerId): Velocity?
 
     /** 取消触摸事件监听 */
     fun cancelPointer()
@@ -388,12 +387,12 @@ private class FPointerScopeImpl(
     override var calculateRotation: Boolean = false
     override val isCanceled: Boolean get() = _isCanceled
 
-    override fun addVelocityPointer(change: PointerInputChange) {
+    override fun velocityAdd(change: PointerInputChange) {
         val info = _pointerHolder[change.id] ?: return
         info.getOrCreateVelocityTracker().addPointerInputChange(change)
     }
 
-    override fun getPointerVelocity(pointerId: PointerId): Velocity? {
+    override fun velocityGet(pointerId: PointerId): Velocity? {
         return _pointerHolder[pointerId]?.velocityTracker?.calculateVelocity()
     }
 
@@ -426,10 +425,6 @@ private class FPointerScopeImpl(
 
     fun onUpAfter(input: PointerInputChange) {
         _pointerHolder.remove(input.id)
-    }
-
-    fun onMoveBefore(input: PointerInputChange) {
-        _pointerHolder[input.id]?.velocityTracker?.addPosition(input.uptimeMillis, input.position)
     }
 
     override fun cancelPointer() {
