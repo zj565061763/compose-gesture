@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
                     listActivity = listOf(
                         SampleAwait::class.java,
                         SamplePointer::class.java,
+                        SamplePager::class.java,
                         SampleGesture::class.java,
                     ),
                     onClickActivity = {
