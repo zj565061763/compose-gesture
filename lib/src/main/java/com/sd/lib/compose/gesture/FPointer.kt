@@ -297,6 +297,8 @@ private class FPointerNode(
                             }
                         }
                     }
+
+                    if (scopeImpl.isCanceled) break
                 }
 
                 if (scopeImpl.isCanceled) break
@@ -364,6 +366,10 @@ private class FPointerScopeImpl(
     val eventScope: AwaitPointerEventScope
 ) : FPointerScope {
     private var _isCanceled = false
+        set(value) {
+            require(value)
+            field = value
+        }
 
     private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
     private var _maxPointerCount = 0
