@@ -38,6 +38,7 @@ fun Modifier.fPointer(
     requireUnconsumedDown: Boolean = false,
     requireUnconsumedUp: Boolean = false,
     requireUnconsumedMove: Boolean = false,
+    touchSlop: Float? = null,
     onStart: (FPointerScope.() -> Unit)? = null,
     onDown: (FPointerScope.(PointerInputChange) -> Unit)? = null,
     onUp: (FPointerScope.(PointerInputChange) -> Unit)? = null,
@@ -49,6 +50,7 @@ fun Modifier.fPointer(
     requireUnconsumedDown = requireUnconsumedDown,
     requireUnconsumedUp = requireUnconsumedUp,
     requireUnconsumedMove = requireUnconsumedMove,
+    touchSlop = touchSlop,
     onStart = onStart,
     onDown = onDown,
     onUp = onUp,
@@ -62,6 +64,7 @@ private class FPointerElement(
     private var requireUnconsumedDown: Boolean,
     private var requireUnconsumedUp: Boolean,
     private var requireUnconsumedMove: Boolean,
+    private var touchSlop: Float?,
     private var onStart: (FPointerScope.() -> Unit)?,
     private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
     private var onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -75,6 +78,7 @@ private class FPointerElement(
             requireUnconsumedDown = requireUnconsumedDown,
             requireUnconsumedUp = requireUnconsumedUp,
             requireUnconsumedMove = requireUnconsumedMove,
+            touchSlop = touchSlop,
             onStart = onStart,
             onDown = onDown,
             onUp = onUp,
@@ -90,6 +94,7 @@ private class FPointerElement(
             requireUnconsumedDown = requireUnconsumedDown,
             requireUnconsumedUp = requireUnconsumedUp,
             requireUnconsumedMove = requireUnconsumedMove,
+            touchSlop = touchSlop,
             onStart = onStart,
             onDown = onDown,
             onUp = onUp,
@@ -104,6 +109,7 @@ private class FPointerElement(
         result = 31 * result + requireUnconsumedDown.hashCode()
         result = 31 * result + requireUnconsumedUp.hashCode()
         result = 31 * result + requireUnconsumedMove.hashCode()
+        result = 31 * result + touchSlop.hashCode()
         result = 31 * result + onStart.hashCode()
         result = 31 * result + onDown.hashCode()
         result = 31 * result + onUp.hashCode()
@@ -119,6 +125,7 @@ private class FPointerElement(
         return pass == other.pass &&
                 requireUnconsumedDown == other.requireUnconsumedDown &&
                 requireUnconsumedUp == other.requireUnconsumedUp &&
+                touchSlop == other.touchSlop &&
                 onStart == other.onStart &&
                 onDown == other.onDown &&
                 onUp == other.onUp &&
@@ -133,6 +140,7 @@ private class FPointerElement(
         properties["requireUnconsumedDown"] = requireUnconsumedDown
         properties["requireUnconsumedUp"] = requireUnconsumedUp
         properties["requireUnconsumedMove"] = requireUnconsumedMove
+        properties["touchSlop"] = touchSlop
         properties["onStart"] = onStart
         properties["onDown"] = onDown
         properties["onUp"] = onUp
@@ -147,6 +155,7 @@ private class FPointerNode(
     private var requireUnconsumedDown: Boolean,
     private var requireUnconsumedUp: Boolean,
     private var requireUnconsumedMove: Boolean,
+    private var touchSlop: Float?,
     private var onStart: (FPointerScope.() -> Unit)?,
     private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
     private var onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -162,6 +171,7 @@ private class FPointerNode(
         requireUnconsumedDown: Boolean,
         requireUnconsumedUp: Boolean,
         requireUnconsumedMove: Boolean,
+        touchSlop: Float?,
         onStart: (FPointerScope.() -> Unit)?,
         onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
         onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -173,6 +183,7 @@ private class FPointerNode(
         this.requireUnconsumedDown = requireUnconsumedDown
         this.requireUnconsumedUp = requireUnconsumedUp
         this.requireUnconsumedMove = requireUnconsumedMove
+        this.touchSlop = touchSlop
         this.onStart = onStart
         this.onDown = onDown
         this.onUp = onUp
@@ -197,7 +208,7 @@ private class FPointerNode(
         awaitEachGesture {
             val scopeImpl = FPointerScopeImpl(this)
 
-            val touchSlop = viewConfiguration.touchSlop
+            val touchSlop = touchSlop ?: viewConfiguration.touchSlop
             var pastTouchSlop = false
             var pan = Offset.Zero
             var zoom = 1f
