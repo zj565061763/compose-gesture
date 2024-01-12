@@ -210,6 +210,7 @@ private class FPointerNode(
 
             while (true) {
                 val event = awaitPointerEvent(pass)
+
                 if (started) {
                     if (calculatePan) {
                         val change = event.calculatePan()
@@ -262,7 +263,9 @@ private class FPointerNode(
                     }
                 }
 
+                if (scopeImpl.isCanceled) break
                 var hasDown = false
+
                 for (input in event.changes) {
                     if (input.pressed) hasDown = true
                     when {
