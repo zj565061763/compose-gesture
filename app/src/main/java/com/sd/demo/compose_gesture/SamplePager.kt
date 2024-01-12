@@ -85,6 +85,7 @@ private fun HeaderView(
             .fillMaxWidth()
             .height(400.dp)
             .fPointer(
+                touchSlop = 0f,
                 onStart = {
                     logMsg { "onStart" }
                     isDrag = false
@@ -94,19 +95,23 @@ private fun HeaderView(
                     if (currentEvent.changes.any { it.positionChanged() }) {
                         if (!isDrag) {
                             if (this.pan.x.absoluteValue >= this.pan.y.absoluteValue) {
-                                logMsg { "header cancel x >= y" }
+                                logMsg { "onCalculate cancel x >= y" }
                                 cancelPointer()
                                 return@fPointer
                             }
                             isDrag = true
+                            logMsg { "onCalculate" }
                         }
                         currentEvent.fConsume { it.positionChanged() }
                     } else {
                         if (!isDrag) {
-                            logMsg { "cancel consumed" }
+                            logMsg { "onCalculate cancel consumed" }
                             cancelPointer()
                         }
                     }
+                },
+                onMove = {
+                    logMsg { "onMove" }
                 },
                 onFinish = {
                     logMsg { "onFinish" }
