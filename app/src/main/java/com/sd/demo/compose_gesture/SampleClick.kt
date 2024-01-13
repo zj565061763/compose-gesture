@@ -39,9 +39,8 @@ private fun Sample(
                     logMsg { "onStart" }
                     hasMove = false
                 },
-                onDown = {
-                    if (pointerCount > 1) {
-                        logMsg { "cancelPointer" }
+                onDown = { input ->
+                    if (input.isConsumed || pointerCount > 1) {
                         cancelPointer()
                     }
                 },
@@ -49,15 +48,23 @@ private fun Sample(
                     hasMove = true
                 },
                 onUp = { input ->
-                    if (!input.isConsumed && !hasMove) {
-                        val clickTime = input.uptimeMillis - input.previousUptimeMillis
-                        if (clickTime < 200) {
-                            logMsg { "click" }
+                    if (input.isConsumed) {
+                        cancelPointer()
+                    } else {
+                        if (!hasMove) {
+                            val clickTime = input.uptimeMillis - input.previousUptimeMillis
+                            if (clickTime < 200) {
+                                logMsg { "click" }
+                            }
                         }
                     }
                 },
                 onFinish = {
-                    logMsg { "onFinish" }
+                    if (isCanceled) {
+                        logMsg { "onFinish canceled" }
+                    } else {
+                        logMsg { "onFinish" }
+                    }
                 }
             )
     )
