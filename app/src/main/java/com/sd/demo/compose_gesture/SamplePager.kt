@@ -103,15 +103,12 @@ private fun HeaderView(
                             return@fPointer
                         }
                         isDrag = true
-                        logMsg { "onCalculate" }
+                        logMsg { "drag" }
                     }
 
                     if (isDrag) {
                         currentEvent.fConsume { it.positionChanged() }
                     }
-                },
-                onMove = {
-                    logMsg { "onMove" }
                 },
                 onFinish = {
                     logMsg { "onFinish" }
