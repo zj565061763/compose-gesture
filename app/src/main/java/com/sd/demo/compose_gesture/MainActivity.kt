@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
                 Content(
                     listActivity = listOf(
                         SampleAwait::class.java,
+                        SampleClick::class.java,
                         SamplePointer::class.java,
                         SamplePager::class.java,
                         SampleGesture::class.java,
