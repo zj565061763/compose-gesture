@@ -15,11 +15,8 @@ import androidx.compose.ui.input.pointer.PointerId
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.SuspendingPointerInputModifierNode
-import androidx.compose.ui.input.pointer.changedToDown
 import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
-import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
-import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.input.pointer.positionChangedIgnoreConsumed
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.input.pointer.util.addPointerInputChange
@@ -35,9 +32,6 @@ import kotlin.math.abs
 
 fun Modifier.fPointer(
     pass: PointerEventPass = PointerEventPass.Main,
-    requireUnconsumedDown: Boolean = false,
-    requireUnconsumedUp: Boolean = false,
-    requireUnconsumedMove: Boolean = false,
     touchSlop: Float? = null,
     onStart: (FPointerScope.() -> Unit)? = null,
     onDown: (FPointerScope.(PointerInputChange) -> Unit)? = null,
@@ -47,9 +41,6 @@ fun Modifier.fPointer(
     onFinish: (FPointerScope.() -> Unit)? = null,
 ) = this then FPointerElement(
     pass = pass,
-    requireUnconsumedDown = requireUnconsumedDown,
-    requireUnconsumedUp = requireUnconsumedUp,
-    requireUnconsumedMove = requireUnconsumedMove,
     touchSlop = touchSlop,
     onStart = onStart,
     onDown = onDown,
@@ -61,9 +52,6 @@ fun Modifier.fPointer(
 
 private class FPointerElement(
     private var pass: PointerEventPass,
-    private var requireUnconsumedDown: Boolean,
-    private var requireUnconsumedUp: Boolean,
-    private var requireUnconsumedMove: Boolean,
     private var touchSlop: Float?,
     private var onStart: (FPointerScope.() -> Unit)?,
     private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -75,9 +63,6 @@ private class FPointerElement(
     override fun create(): FPointerNode {
         return FPointerNode(
             pass = pass,
-            requireUnconsumedDown = requireUnconsumedDown,
-            requireUnconsumedUp = requireUnconsumedUp,
-            requireUnconsumedMove = requireUnconsumedMove,
             touchSlop = touchSlop,
             onStart = onStart,
             onDown = onDown,
@@ -91,9 +76,6 @@ private class FPointerElement(
     override fun update(node: FPointerNode) {
         node.update(
             pass = pass,
-            requireUnconsumedDown = requireUnconsumedDown,
-            requireUnconsumedUp = requireUnconsumedUp,
-            requireUnconsumedMove = requireUnconsumedMove,
             touchSlop = touchSlop,
             onStart = onStart,
             onDown = onDown,
@@ -106,9 +88,6 @@ private class FPointerElement(
 
     override fun hashCode(): Int {
         var result = pass.hashCode()
-        result = 31 * result + requireUnconsumedDown.hashCode()
-        result = 31 * result + requireUnconsumedUp.hashCode()
-        result = 31 * result + requireUnconsumedMove.hashCode()
         result = 31 * result + touchSlop.hashCode()
         result = 31 * result + onStart.hashCode()
         result = 31 * result + onDown.hashCode()
@@ -123,8 +102,6 @@ private class FPointerElement(
         if (this === other) return true
         if (other !is FPointerElement) return false
         return pass == other.pass &&
-                requireUnconsumedDown == other.requireUnconsumedDown &&
-                requireUnconsumedUp == other.requireUnconsumedUp &&
                 touchSlop == other.touchSlop &&
                 onStart == other.onStart &&
                 onDown == other.onDown &&
@@ -137,9 +114,6 @@ private class FPointerElement(
     override fun InspectorInfo.inspectableProperties() {
         name = "fPointer"
         properties["pass"] = pass
-        properties["requireUnconsumedDown"] = requireUnconsumedDown
-        properties["requireUnconsumedUp"] = requireUnconsumedUp
-        properties["requireUnconsumedMove"] = requireUnconsumedMove
         properties["touchSlop"] = touchSlop
         properties["onStart"] = onStart
         properties["onDown"] = onDown
@@ -152,9 +126,6 @@ private class FPointerElement(
 
 private class FPointerNode(
     private var pass: PointerEventPass,
-    private var requireUnconsumedDown: Boolean,
-    private var requireUnconsumedUp: Boolean,
-    private var requireUnconsumedMove: Boolean,
     private var touchSlop: Float?,
     private var onStart: (FPointerScope.() -> Unit)?,
     private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -168,9 +139,6 @@ private class FPointerNode(
 
     fun update(
         pass: PointerEventPass,
-        requireUnconsumedDown: Boolean,
-        requireUnconsumedUp: Boolean,
-        requireUnconsumedMove: Boolean,
         touchSlop: Float?,
         onStart: (FPointerScope.() -> Unit)?,
         onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -180,9 +148,6 @@ private class FPointerNode(
         onFinish: (FPointerScope.() -> Unit)?,
     ) {
         this.pass = pass
-        this.requireUnconsumedDown = requireUnconsumedDown
-        this.requireUnconsumedUp = requireUnconsumedUp
-        this.requireUnconsumedMove = requireUnconsumedMove
         this.touchSlop = touchSlop
         this.onStart = onStart
         this.onDown = onDown
@@ -280,7 +245,7 @@ private class FPointerNode(
                 for (input in event.changes) {
                     if (input.pressed) hasDown = true
                     when {
-                        input.fChangedToDown(requireUnconsumedDown) -> {
+                        input.changedToDownIgnoreConsumed() -> {
                             if (!started) {
                                 started = true
 
@@ -295,14 +260,14 @@ private class FPointerNode(
                             onDown?.invoke(scopeImpl, input)
                         }
 
-                        input.fChangedToUp(requireUnconsumedUp) -> {
+                        input.changedToUpIgnoreConsumed() -> {
                             if (started) {
                                 onUp?.invoke(scopeImpl, input)
                                 scopeImpl.onUpAfter(input)
                             }
                         }
 
-                        input.fPositionChanged(requireUnconsumedMove) -> {
+                        input.positionChangedIgnoreConsumed() -> {
                             if (started) {
                                 onMove?.invoke(scopeImpl, input)
                             }
@@ -460,16 +425,4 @@ private class FPointerScopeImpl(
             }
         }
     }
-}
-
-private fun PointerInputChange.fChangedToDown(requireUnconsumed: Boolean): Boolean {
-    return if (requireUnconsumed) changedToDown() else changedToDownIgnoreConsumed()
-}
-
-private fun PointerInputChange.fChangedToUp(requireUnconsumed: Boolean): Boolean {
-    return if (requireUnconsumed) changedToUp() else changedToUpIgnoreConsumed()
-}
-
-private fun PointerInputChange.fPositionChanged(requireUnconsumed: Boolean): Boolean {
-    return if (requireUnconsumed) positionChanged() else positionChangedIgnoreConsumed()
 }
