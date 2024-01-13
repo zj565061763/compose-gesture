@@ -30,6 +30,13 @@ fun PointerEvent.fConsume(
 }
 
 /**
+ * true表示[PointerEvent.changes]中至少有一个满足[fIsConsumedPositionChange]
+ */
+fun PointerEvent.fHasConsumedPositionChange(): Boolean {
+    return changes.any { it.fIsConsumedPositionChange() }
+}
+
+/**
  * true表示当前位置发生了变化，并且被消费了
  */
 fun PointerInputChange.fIsConsumedPositionChange(): Boolean {
