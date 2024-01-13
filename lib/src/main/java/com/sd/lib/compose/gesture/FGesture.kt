@@ -1,5 +1,6 @@
 package com.sd.lib.compose.gesture
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
@@ -15,10 +16,6 @@ suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
 
 fun PointerEvent.fHasDownPointer(): Boolean = changes.any { it.pressed }
 
-fun PointerEvent.fDownPointerCount(): Int = changes.fold(0) { acc, input ->
-    acc + (if (input.pressed) 1 else 0)
-}
-
 fun PointerEvent.fConsume(
     predicate: (PointerInputChange) -> Boolean,
 ): Boolean {
@@ -30,4 +27,11 @@ fun PointerEvent.fConsume(
         }
     }
     return consume
+}
+
+/**
+ * true表示当前位置发生了变化，并且被消费了
+ */
+fun PointerInputChange.fIsConsumedPositionChange(): Boolean {
+    return isConsumed && (position - previousPosition) != Offset.Zero
 }
