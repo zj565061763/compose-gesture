@@ -273,7 +273,6 @@ private class FPointerNode(
                             }
                         }
                     }
-
                     if (scopeImpl.isCanceled) break
                 }
 
