@@ -7,7 +7,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -15,6 +20,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
+import com.sd.lib.compose.gesture.fHasConsumedPositionChange
 import com.sd.lib.compose.gesture.fPointer
 
 class SampleGesture : ComponentActivity() {
@@ -33,8 +39,8 @@ private fun Sample(
     modifier: Modifier = Modifier,
 ) {
     var offset by remember { mutableStateOf(Offset.Zero) }
-    var scale by remember { mutableStateOf(1f) }
-    var rotation by remember { mutableStateOf(0f) }
+    var scale by remember { mutableFloatStateOf(1f) }
+    var rotation by remember { mutableFloatStateOf(0f) }
 
     Box(
         modifier = modifier
@@ -46,7 +52,10 @@ private fun Sample(
                     calculateRotation = true
                 },
                 onCalculate = {
-                    logMsg { "onCalculate pan:${this.pan} zoom:${this.zoom} rotation:${this.rotation} centroid:${this.centroid}" }
+                    if (currentEvent.fHasConsumedPositionChange()) {
+                        cancelPointer()
+                        return@fPointer
+                    }
 
                     if ((scale < 0.3f && zoom < 1f) || (scale > 5f && zoom > 1f)) {
                         cancelPointer()
