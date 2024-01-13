@@ -111,7 +111,11 @@ private fun HeaderView(
                     }
                 },
                 onFinish = {
-                    logMsg { "onFinish" }
+                    if (isCanceled) {
+                        logMsg { "onFinish canceled" }
+                    } else {
+                        logMsg { "onFinish" }
+                    }
                 },
             ),
         contentAlignment = Alignment.Center,
