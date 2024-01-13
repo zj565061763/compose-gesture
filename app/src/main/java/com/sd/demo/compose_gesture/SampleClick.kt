@@ -36,10 +36,12 @@ private fun Sample(
             .fillMaxSize()
             .fPointer(
                 onStart = {
+                    logMsg { "onStart" }
                     hasMove = false
                 },
                 onDown = {
                     if (pointerCount > 1) {
+                        logMsg { "cancelPointer" }
                         cancelPointer()
                     }
                 },
@@ -54,6 +56,9 @@ private fun Sample(
                         }
                     }
                 },
+                onFinish = {
+                    logMsg { "onFinish" }
+                }
             )
     )
 }
