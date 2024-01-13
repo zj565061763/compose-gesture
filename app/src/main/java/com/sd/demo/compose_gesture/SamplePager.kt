@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fConsume
+import com.sd.lib.compose.gesture.fHasConsumedPositionChange
 import com.sd.lib.compose.gesture.fPointer
 import kotlin.math.absoluteValue
 
@@ -92,22 +93,21 @@ private fun HeaderView(
                     calculatePan = true
                 },
                 onCalculate = {
-                    if (currentEvent.changes.any { it.positionChanged() }) {
-                        if (!isDrag) {
-                            if (this.pan.x.absoluteValue >= this.pan.y.absoluteValue) {
-                                logMsg { "onCalculate cancel x >= y" }
-                                cancelPointer()
-                                return@fPointer
-                            }
-                            isDrag = true
-                            logMsg { "onCalculate" }
+                    if (currentEvent.fHasConsumedPositionChange()) {
+                        cancelPointer()
+                        return@fPointer
+                    }
+
+                    if (!isDrag) {
+                        if (this.pan.x.absoluteValue >= this.pan.y.absoluteValue) {
+                            return@fPointer
                         }
+                        isDrag = true
+                        logMsg { "onCalculate" }
+                    }
+
+                    if (isDrag) {
                         currentEvent.fConsume { it.positionChanged() }
-                    } else {
-                        if (!isDrag) {
-                            logMsg { "onCalculate cancel consumed" }
-                            cancelPointer()
-                        }
                     }
                 },
                 onMove = {
