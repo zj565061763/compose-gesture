@@ -33,6 +33,7 @@ import kotlin.math.abs
 fun Modifier.fPointer(
     pass: PointerEventPass = PointerEventPass.Main,
     touchSlop: Float? = null,
+    sharePointerInputWithSiblings: Boolean = false,
     onStart: (FPointerScope.() -> Unit)? = null,
     onDown: (FPointerScope.(PointerInputChange) -> Unit)? = null,
     onUp: (FPointerScope.(PointerInputChange) -> Unit)? = null,
@@ -42,6 +43,7 @@ fun Modifier.fPointer(
 ) = this then FPointerElement(
     pass = pass,
     touchSlop = touchSlop,
+    sharePointerInputWithSiblings = sharePointerInputWithSiblings,
     onStart = onStart,
     onDown = onDown,
     onUp = onUp,
@@ -53,6 +55,7 @@ fun Modifier.fPointer(
 private class FPointerElement(
     private var pass: PointerEventPass,
     private var touchSlop: Float?,
+    private var sharePointerInputWithSiblings: Boolean,
     private var onStart: (FPointerScope.() -> Unit)?,
     private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
     private var onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -64,6 +67,7 @@ private class FPointerElement(
         return FPointerNode(
             pass = pass,
             touchSlop = touchSlop,
+            sharePointerInputWithSiblings = sharePointerInputWithSiblings,
             onStart = onStart,
             onDown = onDown,
             onUp = onUp,
@@ -77,6 +81,7 @@ private class FPointerElement(
         node.update(
             pass = pass,
             touchSlop = touchSlop,
+            sharePointerInputWithSiblings = sharePointerInputWithSiblings,
             onStart = onStart,
             onDown = onDown,
             onUp = onUp,
@@ -89,6 +94,7 @@ private class FPointerElement(
     override fun hashCode(): Int {
         var result = pass.hashCode()
         result = 31 * result + touchSlop.hashCode()
+        result = 31 * result + sharePointerInputWithSiblings.hashCode()
         result = 31 * result + onStart.hashCode()
         result = 31 * result + onDown.hashCode()
         result = 31 * result + onUp.hashCode()
@@ -103,6 +109,7 @@ private class FPointerElement(
         if (other !is FPointerElement) return false
         return pass == other.pass &&
                 touchSlop == other.touchSlop &&
+                sharePointerInputWithSiblings == other.sharePointerInputWithSiblings &&
                 onStart == other.onStart &&
                 onDown == other.onDown &&
                 onUp == other.onUp &&
@@ -115,6 +122,7 @@ private class FPointerElement(
         name = "fPointer"
         properties["pass"] = pass
         properties["touchSlop"] = touchSlop
+        properties["sharePointerInputWithSiblings"] = sharePointerInputWithSiblings
         properties["onStart"] = onStart
         properties["onDown"] = onDown
         properties["onUp"] = onUp
@@ -127,6 +135,7 @@ private class FPointerElement(
 private class FPointerNode(
     private var pass: PointerEventPass,
     private var touchSlop: Float?,
+    private var sharePointerInputWithSiblings: Boolean,
     private var onStart: (FPointerScope.() -> Unit)?,
     private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
     private var onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -140,6 +149,7 @@ private class FPointerNode(
     fun update(
         pass: PointerEventPass,
         touchSlop: Float?,
+        sharePointerInputWithSiblings: Boolean,
         onStart: (FPointerScope.() -> Unit)?,
         onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
         onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -149,6 +159,7 @@ private class FPointerNode(
     ) {
         this.pass = pass
         this.touchSlop = touchSlop
+        this.sharePointerInputWithSiblings = sharePointerInputWithSiblings
         this.onStart = onStart
         this.onDown = onDown
         this.onUp = onUp
@@ -167,6 +178,10 @@ private class FPointerNode(
 
     override fun onCancelPointerInput() {
         pointerInputNode.onCancelPointerInput()
+    }
+
+    override fun sharePointerInputWithSiblings(): Boolean {
+        return sharePointerInputWithSiblings
     }
 
     private suspend fun PointerInputScope.pointerInput() {
