@@ -6,7 +6,7 @@ plugins {
 
 val libGroupId = "com.sd.lib.android"
 val libArtifactId = "compose-gesture"
-val libVersionName = "1.4.1"
+val libVersion = "1.4.2"
 
 android {
     namespace = "com.sd.lib.compose.gesture"
@@ -46,7 +46,7 @@ publishing {
         create<MavenPublication>("release") {
             groupId = libGroupId
             artifactId = libArtifactId
-            version = libVersionName
+            version = libVersion
 
             afterEvaluate {
                 from(components["release"])
