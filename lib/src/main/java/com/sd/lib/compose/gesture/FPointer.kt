@@ -171,7 +171,7 @@ private class FPointerNode(
     override fun onPointerEvent(
         pointerEvent: PointerEvent,
         pass: PointerEventPass,
-        bounds: IntSize
+        bounds: IntSize,
     ) {
         pointerInputNode.onPointerEvent(pointerEvent, pass, bounds)
     }
@@ -353,13 +353,10 @@ interface FPointerScope {
 }
 
 private class FPointerScopeImpl(
-    val eventScope: AwaitPointerEventScope
+    val eventScope: AwaitPointerEventScope,
 ) : FPointerScope {
+
     private var _isCanceled = false
-        set(value) {
-            require(value)
-            field = value
-        }
 
     private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
     private var _maxPointerCount = 0
