@@ -10,6 +10,8 @@ composeCompiler = "1.5.15"
 
 lifecycle = "2.8.7"
 
+maven-publish = "0.32.0"
+
 [libraries]
 
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
@@ -31,3 +33,4 @@ androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }

@@ -24,7 +24,6 @@ import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.PointerInputModifierNode
 import androidx.compose.ui.platform.InspectorInfo
-import androidx.compose.ui.platform.ViewConfiguration
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.Velocity
 import kotlin.math.PI
@@ -302,40 +301,25 @@ private class FPointerNode(
   }
 }
 
-interface FPointerScope {
-  /** [AwaitPointerEventScope.size] */
-  val size: IntSize
-
-  /** [AwaitPointerEventScope.currentEvent] */
-  val currentEvent: PointerEvent
-
-  /** [AwaitPointerEventScope.viewConfiguration] */
-  val viewConfiguration: ViewConfiguration
-
+interface FPointerScope : AwaitPointerEventScope {
   /** 当前触摸点的数量 */
   val pointerCount: Int
-
   /** 触摸点最多时候的数量 */
   val maxPointerCount: Int
 
   /** 两次事件之间的距离 */
   val pan: Offset
-
   /** 两次事件之间的缩放 */
   val zoom: Float
-
   /** 两次事件之间的旋转 */
   val rotation: Float
-
   /** 触摸点的中心点 */
   val centroid: Offset
 
   /** 是否计算[pan] */
   var calculatePan: Boolean
-
   /** 是否计算[zoom] */
   var calculateZoom: Boolean
-
   /** 是否计算[rotation] */
   var calculateRotation: Boolean
 
@@ -353,9 +337,8 @@ interface FPointerScope {
 }
 
 private class FPointerScopeImpl(
-  val eventScope: AwaitPointerEventScope,
-) : FPointerScope {
-
+  awaitPointerEventScope: AwaitPointerEventScope,
+) : FPointerScope, AwaitPointerEventScope by awaitPointerEventScope {
   private var _isCanceled = false
 
   private val _pointerHolder = mutableMapOf<PointerId, PointerInfo>()
@@ -365,10 +348,6 @@ private class FPointerScopeImpl(
   private var _zoom = 1f
   private var _rotation = 0f
   private var _centroid = Offset.Zero
-
-  override val size: IntSize get() = eventScope.size
-  override val currentEvent: PointerEvent get() = eventScope.currentEvent
-  override val viewConfiguration: ViewConfiguration get() = eventScope.viewConfiguration
 
   override val pointerCount: Int get() = _pointerHolder.size
   override val maxPointerCount: Int get() = _maxPointerCount
@@ -381,6 +360,7 @@ private class FPointerScopeImpl(
   override var calculatePan: Boolean = false
   override var calculateZoom: Boolean = false
   override var calculateRotation: Boolean = false
+
   override val isCanceled: Boolean get() = _isCanceled
 
   override fun velocityAdd(change: PointerInputChange) {
@@ -410,7 +390,6 @@ private class FPointerScopeImpl(
 
   fun onDownBefore(input: PointerInputChange) {
     if (_pointerHolder.containsKey(input.id)) return
-
     _pointerHolder[input.id] = PointerInfo(null)
     _pointerHolder.size.let { count ->
       if (_maxPointerCount < count) {

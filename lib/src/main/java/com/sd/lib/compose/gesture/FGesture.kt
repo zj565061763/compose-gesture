@@ -5,40 +5,26 @@ import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.util.fastAny
 
-suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
-  if (currentEvent.fHasDownPointer()) {
+suspend fun AwaitPointerEventScope.fAwaitAllPointersUp(
+  pass: PointerEventPass = PointerEventPass.Final,
+) {
+  if (currentEvent.fHasPointerPressed()) {
     do {
-      val event = awaitPointerEvent(PointerEventPass.Final)
-    } while (event.fHasDownPointer())
+      val event = awaitPointerEvent(pass)
+    } while (event.fHasPointerPressed())
   }
 }
 
-fun PointerEvent.fHasDownPointer(): Boolean = changes.any { it.pressed }
-
-fun PointerEvent.fConsume(
-  predicate: (PointerInputChange) -> Boolean,
-): Boolean {
-  var consume = false
-  changes.forEach {
-    if (predicate(it)) {
-      it.consume()
-      consume = true
-    }
-  }
-  return consume
+fun PointerEvent.fHasPointerPressed(): Boolean {
+  return changes.fastAny { it.pressed }
 }
 
-/**
- * true表示[PointerEvent.changes]中至少有一个满足[fIsConsumedPositionChange]
- */
 fun PointerEvent.fHasConsumedPositionChange(): Boolean {
   return changes.any { it.fIsConsumedPositionChange() }
 }
 
-/**
- * true表示当前位置发生了变化，并且被消费了
- */
 fun PointerInputChange.fIsConsumedPositionChange(): Boolean {
   return isConsumed && (position - previousPosition) != Offset.Zero
 }

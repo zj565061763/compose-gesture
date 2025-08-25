@@ -1,12 +1,10 @@
-plugins {
-  id("com.android.library")
-  id("org.jetbrains.kotlin.android")
-  `maven-publish`
-}
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 
-val libGroupId = "com.sd.lib.android"
-val libArtifactId = "compose-gesture"
-val libVersion = "1.4.2"
+plugins {
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.mavenPublish)
+}
 
 android {
   namespace = "com.sd.lib.compose.gesture"
@@ -22,20 +20,14 @@ android {
 
   kotlinOptions {
     jvmTarget = "1.8"
-    freeCompilerArgs += "-module-name=$libGroupId.$libArtifactId"
   }
 
   buildFeatures {
     compose = true
   }
+
   composeOptions {
     kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-  }
-
-  publishing {
-    singleVariant("release") {
-      withSourcesJar()
-    }
   }
 }
 
@@ -45,16 +37,12 @@ dependencies {
   implementation(libs.androidx.compose.foundation)
 }
 
-publishing {
-  publications {
-    create<MavenPublication>("release") {
-      groupId = libGroupId
-      artifactId = libArtifactId
-      version = libVersion
-
-      afterEvaluate {
-        from(components["release"])
-      }
-    }
-  }
+mavenPublishing {
+  configure(
+    AndroidSingleVariantLibrary(
+      variant = "release",
+      sourcesJar = true,
+      publishJavadocJar = true,
+    )
+  )
 }
