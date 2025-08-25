@@ -11,49 +11,49 @@ import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointer
 
 class SamplePointer : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                Sample()
-            }
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      AppTheme {
+        Sample()
+      }
     }
+  }
 }
 
 @Composable
 private fun Sample(
-    modifier: Modifier = Modifier,
+  modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .fPointer(
-                onStart = {
-                    calculatePan = true
-                    calculateZoom = true
-                    calculateRotation = true
-                    logMsg { "onStart event:$currentEvent" }
-                },
-                onDown = {
-                    logMsg { "onDown pointerCount:$pointerCount id:${it.id}" }
-                    if (pointerCount >= 4) {
-                        cancelPointer()
-                    }
-                },
-                onUp = {
-                    logMsg { "onUp pointerCount:$pointerCount id:${it.id} velocity:${velocityGet(it.id)}" }
-                },
-                onMove = {
-                    logMsg { "onMove pointerCount:$pointerCount id:${it.id}" }
-                    velocityAdd(it)
-                },
-                onCalculate = {
-                    logMsg { "onCalculate pan:$pan zoom:$zoom rotation:$rotation" }
-                },
-                onFinish = {
-                    logMsg { "onFinish maxPointerCount:$maxPointerCount" }
-                },
-            )
-    )
+  Box(
+    modifier = modifier
+      .fillMaxSize()
+      .fPointer(
+        onStart = {
+          calculatePan = true
+          calculateZoom = true
+          calculateRotation = true
+          logMsg { "onStart event:$currentEvent" }
+        },
+        onDown = {
+          logMsg { "onDown pointerCount:$pointerCount id:${it.id}" }
+          if (pointerCount >= 4) {
+            cancelPointer()
+          }
+        },
+        onUp = {
+          logMsg { "onUp pointerCount:$pointerCount id:${it.id} velocity:${velocityGet(it.id)}" }
+        },
+        onMove = {
+          logMsg { "onMove pointerCount:$pointerCount id:${it.id}" }
+          velocityAdd(it)
+        },
+        onCalculate = {
+          logMsg { "onCalculate pan:$pan zoom:$zoom rotation:$rotation" }
+        },
+        onFinish = {
+          logMsg { "onFinish maxPointerCount:$maxPointerCount" }
+        },
+      )
+  )
 }

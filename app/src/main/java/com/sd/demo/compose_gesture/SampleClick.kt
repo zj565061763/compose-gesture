@@ -15,57 +15,57 @@ import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fPointer
 
 class SampleClick : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                Sample()
-            }
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      AppTheme {
+        Sample()
+      }
     }
+  }
 }
 
 @Composable
 private fun Sample(
-    modifier: Modifier = Modifier,
+  modifier: Modifier = Modifier,
 ) {
-    var hasMove by remember { mutableStateOf(false) }
+  var hasMove by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .fPointer(
-                onStart = {
-                    logMsg { "onStart" }
-                    hasMove = false
-                },
-                onDown = { input ->
-                    if (input.isConsumed || pointerCount > 1) {
-                        cancelPointer()
-                    }
-                },
-                onMove = {
-                    hasMove = true
-                },
-                onUp = { input ->
-                    if (input.isConsumed) {
-                        cancelPointer()
-                    } else {
-                        if (!hasMove) {
-                            val clickTime = input.uptimeMillis - input.previousUptimeMillis
-                            if (clickTime < 200) {
-                                logMsg { "click" }
-                            }
-                        }
-                    }
-                },
-                onFinish = {
-                    if (isCanceled) {
-                        logMsg { "onFinish canceled" }
-                    } else {
-                        logMsg { "onFinish" }
-                    }
-                }
-            )
-    )
+  Box(
+    modifier = modifier
+      .fillMaxSize()
+      .fPointer(
+        onStart = {
+          logMsg { "onStart" }
+          hasMove = false
+        },
+        onDown = { input ->
+          if (input.isConsumed || pointerCount > 1) {
+            cancelPointer()
+          }
+        },
+        onMove = {
+          hasMove = true
+        },
+        onUp = { input ->
+          if (input.isConsumed) {
+            cancelPointer()
+          } else {
+            if (!hasMove) {
+              val clickTime = input.uptimeMillis - input.previousUptimeMillis
+              if (clickTime < 200) {
+                logMsg { "click" }
+              }
+            }
+          }
+        },
+        onFinish = {
+          if (isCanceled) {
+            logMsg { "onFinish canceled" }
+          } else {
+            logMsg { "onFinish" }
+          }
+        }
+      )
+  )
 }

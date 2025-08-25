@@ -24,63 +24,63 @@ import com.sd.lib.compose.gesture.fHasConsumedPositionChange
 import com.sd.lib.compose.gesture.fPointer
 
 class SampleGesture : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                Sample()
-            }
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      AppTheme {
+        Sample()
+      }
     }
+  }
 }
 
 @Composable
 private fun Sample(
-    modifier: Modifier = Modifier,
+  modifier: Modifier = Modifier,
 ) {
-    var offset by remember { mutableStateOf(Offset.Zero) }
-    var scale by remember { mutableFloatStateOf(1f) }
-    var rotation by remember { mutableFloatStateOf(0f) }
+  var offset by remember { mutableStateOf(Offset.Zero) }
+  var scale by remember { mutableFloatStateOf(1f) }
+  var rotation by remember { mutableFloatStateOf(0f) }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .fPointer(
-                onStart = {
-                    calculatePan = true
-                    calculateZoom = true
-                    calculateRotation = true
-                },
-                onCalculate = {
-                    if (currentEvent.fHasConsumedPositionChange()) {
-                        cancelPointer()
-                        return@fPointer
-                    }
+  Box(
+    modifier = modifier
+      .fillMaxSize()
+      .fPointer(
+        onStart = {
+          calculatePan = true
+          calculateZoom = true
+          calculateRotation = true
+        },
+        onCalculate = {
+          if (currentEvent.fHasConsumedPositionChange()) {
+            cancelPointer()
+            return@fPointer
+          }
 
-                    if ((scale < 0.3f && zoom < 1f) || (scale > 5f && zoom > 1f)) {
-                        return@fPointer
-                    }
+          if ((scale < 0.3f && zoom < 1f) || (scale > 5f && zoom > 1f)) {
+            return@fPointer
+          }
 
-                    offset += this.pan
-                    scale *= this.zoom
-                    rotation += this.rotation
-                },
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.scale),
-            contentDescription = "",
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier
-                .fillMaxWidth()
-                .graphicsLayer {
-                    translationX = offset.x
-                    translationY = offset.y
-                    scaleX = scale
-                    scaleY = scale
-                    rotationZ = rotation
-                }
-        )
-    }
+          offset += this.pan
+          scale *= this.zoom
+          rotation += this.rotation
+        },
+      ),
+    contentAlignment = Alignment.Center,
+  ) {
+    Image(
+      painter = painterResource(id = R.drawable.scale),
+      contentDescription = "",
+      contentScale = ContentScale.FillWidth,
+      modifier = Modifier
+        .fillMaxWidth()
+        .graphicsLayer {
+          translationX = offset.x
+          translationY = offset.y
+          scaleX = scale
+          scaleY = scale
+          rotationZ = rotation
+        }
+    )
+  }
 }

@@ -7,38 +7,38 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
 
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp() {
-    if (currentEvent.fHasDownPointer()) {
-        do {
-            val event = awaitPointerEvent(PointerEventPass.Final)
-        } while (event.fHasDownPointer())
-    }
+  if (currentEvent.fHasDownPointer()) {
+    do {
+      val event = awaitPointerEvent(PointerEventPass.Final)
+    } while (event.fHasDownPointer())
+  }
 }
 
 fun PointerEvent.fHasDownPointer(): Boolean = changes.any { it.pressed }
 
 fun PointerEvent.fConsume(
-    predicate: (PointerInputChange) -> Boolean,
+  predicate: (PointerInputChange) -> Boolean,
 ): Boolean {
-    var consume = false
-    changes.forEach {
-        if (predicate(it)) {
-            it.consume()
-            consume = true
-        }
+  var consume = false
+  changes.forEach {
+    if (predicate(it)) {
+      it.consume()
+      consume = true
     }
-    return consume
+  }
+  return consume
 }
 
 /**
  * true表示[PointerEvent.changes]中至少有一个满足[fIsConsumedPositionChange]
  */
 fun PointerEvent.fHasConsumedPositionChange(): Boolean {
-    return changes.any { it.fIsConsumedPositionChange() }
+  return changes.any { it.fIsConsumedPositionChange() }
 }
 
 /**
  * true表示当前位置发生了变化，并且被消费了
  */
 fun PointerInputChange.fIsConsumedPositionChange(): Boolean {
-    return isConsumed && (position - previousPosition) != Offset.Zero
+  return isConsumed && (position - previousPosition) != Offset.Zero
 }

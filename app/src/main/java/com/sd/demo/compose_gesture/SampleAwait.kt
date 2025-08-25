@@ -14,31 +14,31 @@ import com.sd.demo.compose_gesture.ui.theme.AppTheme
 import com.sd.lib.compose.gesture.fAwaitAllPointersUp
 
 class SampleAwait : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                Sample()
-            }
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      AppTheme {
+        Sample()
+      }
     }
+  }
 }
 
 @Composable
 private fun Sample(
-    modifier: Modifier = Modifier,
+  modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                awaitEachGesture {
-                    awaitFirstDown()
-                    logMsg { "awaitFirstDown" }
+  Box(
+    modifier = modifier
+      .fillMaxSize()
+      .pointerInput(Unit) {
+        awaitEachGesture {
+          awaitFirstDown()
+          logMsg { "awaitFirstDown" }
 
-                    fAwaitAllPointersUp()
-                    logMsg { "fAwaitAllPointersUp" }
-                }
-            }
-    )
+          fAwaitAllPointersUp()
+          logMsg { "fAwaitAllPointersUp" }
+        }
+      }
+  )
 }
