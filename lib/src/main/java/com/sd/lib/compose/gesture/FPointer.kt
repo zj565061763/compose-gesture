@@ -278,14 +278,12 @@ private class FPointerNode(
               if (started) {
                 onUp?.invoke(scopeImpl, input)
                 scopeImpl.onUpAfter(input)
-                if (scopeImpl.isCanceledPointer) break
               }
             }
 
             input.positionChangedIgnoreConsumed() -> {
               if (started) {
                 onMove?.invoke(scopeImpl, input)
-                if (scopeImpl.isCanceledPointer) break
               }
             }
           }
