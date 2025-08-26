@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.sd.demo.compose_gesture.ui.theme.AppTheme
+import com.sd.lib.compose.gesture.fConsumePositionChanged
 import com.sd.lib.compose.gesture.fHasConsumedPositionChange
 import com.sd.lib.compose.gesture.fPointer
 
@@ -71,6 +72,8 @@ private fun Sample(
           offset += this.pan
           scale *= this.zoom
           rotation += this.rotation
+
+          currentEvent.fConsumePositionChanged()
         },
       ),
     contentAlignment = Alignment.Center,
