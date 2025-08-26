@@ -14,8 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,10 +27,7 @@ class MainActivity : ComponentActivity() {
         Content(
           listActivity = listOf(
             SampleAwait::class.java,
-            SampleClick::class.java,
             SamplePointer::class.java,
-            SamplePager::class.java,
-            SampleGesture::class.java,
           ),
           onClickActivity = {
             startActivity(Intent(this, it))
@@ -48,7 +43,6 @@ private fun Content(
   listActivity: List<Class<out Activity>>,
   onClickActivity: (Class<out Activity>) -> Unit,
 ) {
-  val onClickActivityUpdated by rememberUpdatedState(onClickActivity)
   LazyColumn(
     modifier = Modifier
       .fillMaxSize()
@@ -60,9 +54,7 @@ private fun Content(
       listActivity,
       key = { it },
     ) { item ->
-      Button(
-        onClick = { onClickActivityUpdated(item) }
-      ) {
+      Button(onClick = { onClickActivity(item) }) {
         Text(text = item.simpleName)
       }
     }

@@ -22,11 +22,8 @@
             </intent-filter>
         </activity>
 
-
         <activity android:name=".SampleAwait" />
-        <activity android:name=".SampleClick" />
         <activity android:name=".SamplePointer" />
-        <activity android:name=".SamplePager" />
         <activity android:name=".SampleGesture" />
 
     </application>
