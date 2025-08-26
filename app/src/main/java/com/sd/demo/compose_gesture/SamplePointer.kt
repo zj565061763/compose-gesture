@@ -48,6 +48,7 @@ private fun Sample(
       .fillMaxSize()
       .fPointer(
         onStart = {
+          logMsg { "onStart" }
           calculatePan = true
           calculateZoom = true
           calculateRotation = true
@@ -56,7 +57,10 @@ private fun Sample(
           logMsg { "onDown pointerCount:$pointerCount" }
         },
         onUp = {
-          logMsg { "onUp pointerCount:$pointerCount maxPointerCount:$maxPointerCount" }
+          logMsg { "onUp pointerCount:$pointerCount" }
+        },
+        onFinish = {
+          logMsg { "onFinish maxPointerCount:$maxPointerCount" }
         },
         onCalculate = {
           if (currentEvent.fHasConsumedPositionChange()) {
