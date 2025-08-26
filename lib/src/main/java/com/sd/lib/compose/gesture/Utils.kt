@@ -4,8 +4,10 @@ import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.positionChanged
 import androidx.compose.ui.input.pointer.positionChangedIgnoreConsumed
 import androidx.compose.ui.util.fastAny
+import androidx.compose.ui.util.fastForEach
 
 /** 等待所有指针都抬起 */
 suspend fun AwaitPointerEventScope.fAwaitAllPointersUp(
@@ -21,6 +23,13 @@ suspend fun AwaitPointerEventScope.fAwaitAllPointersUp(
 /** 是否有指针按下 */
 fun PointerEvent.fHasPointerPressed(): Boolean {
   return changes.fastAny { it.pressed }
+}
+
+/** 消费移动事件 */
+fun PointerEvent.fConsumePositionChanged() {
+  changes.fastForEach {
+    if (it.positionChanged()) it.consume()
+  }
 }
 
 /** 是否有被消费的移动事件 */
