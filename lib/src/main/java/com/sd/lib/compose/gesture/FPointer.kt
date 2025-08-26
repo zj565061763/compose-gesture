@@ -26,6 +26,7 @@ import androidx.compose.ui.node.PointerInputModifierNode
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.Velocity
+import androidx.compose.ui.util.fastAny
 import kotlin.math.PI
 import kotlin.math.abs
 
@@ -255,9 +256,7 @@ private class FPointerNode(
 
         if (scopeImpl.isCanceledPointer) break
 
-        var hasPressed = false
         for (input in event.changes) {
-          if (input.pressed) hasPressed = true
           when {
             input.changedToDownIgnoreConsumed() -> {
               if (!started) {
@@ -289,9 +288,9 @@ private class FPointerNode(
           }
           if (scopeImpl.isCanceledPointer) break
         }
-        if (!hasPressed) break
 
         if (scopeImpl.isCanceledPointer) break
+        if (!event.changes.fastAny { it.pressed }) break
       }
 
       if (started) {
