@@ -254,10 +254,10 @@ private class FPointerNode(
         }
 
         if (scopeImpl.isCanceledPointer) break
-        var hasDown = false
 
+        var hasPressed = false
         for (input in event.changes) {
-          if (input.pressed) hasDown = true
+          if (input.pressed) hasPressed = true
           when {
             input.changedToDownIgnoreConsumed() -> {
               if (!started) {
@@ -289,9 +289,9 @@ private class FPointerNode(
           }
           if (scopeImpl.isCanceledPointer) break
         }
+        if (!hasPressed) break
 
         if (scopeImpl.isCanceledPointer) break
-        if (!hasDown) break
       }
 
       if (started) {
