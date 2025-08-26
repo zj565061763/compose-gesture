@@ -253,7 +253,7 @@ private class FPointerNode(
           }
         }
 
-        if (scopeImpl.isCanceled) break
+        if (scopeImpl.isCanceledPointer) break
         var hasDown = false
 
         for (input in event.changes) {
@@ -264,7 +264,7 @@ private class FPointerNode(
                 started = true
 
                 onStart?.invoke(scopeImpl)
-                if (scopeImpl.isCanceled) break
+                if (scopeImpl.isCanceledPointer) break
 
                 calculatePan = scopeImpl.calculatePan
                 calculateZoom = scopeImpl.calculateZoom
@@ -287,10 +287,10 @@ private class FPointerNode(
               }
             }
           }
-          if (scopeImpl.isCanceled) break
+          if (scopeImpl.isCanceledPointer) break
         }
 
-        if (scopeImpl.isCanceled) break
+        if (scopeImpl.isCanceledPointer) break
         if (!hasDown) break
       }
 
@@ -324,7 +324,7 @@ interface FPointerScope : AwaitPointerEventScope {
   var calculateRotation: Boolean
 
   /** 是否被取消[cancelPointer] */
-  val isCanceled: Boolean
+  val isCanceledPointer: Boolean
 
   /** 添加速率信息 */
   fun velocityAdd(change: PointerInputChange)
@@ -361,7 +361,7 @@ private class FPointerScopeImpl(
   override var calculateZoom: Boolean = false
   override var calculateRotation: Boolean = false
 
-  override val isCanceled: Boolean get() = _isCanceled
+  override val isCanceledPointer: Boolean get() = _isCanceled
 
   override fun velocityAdd(change: PointerInputChange) {
     val info = _pointerHolder[change.id] ?: return
