@@ -262,16 +262,15 @@ private class FPointerNode(
             input.changedToDownIgnoreConsumed() -> {
               if (!started) {
                 started = true
-
                 onStart?.invoke(scopeImpl)
                 if (scopeImpl.isCanceledPointer) break
-
                 calculatePan = scopeImpl.calculatePan
                 calculateZoom = scopeImpl.calculateZoom
                 calculateRotation = scopeImpl.calculateRotation
               }
               scopeImpl.onDownBefore(input)
               onDown?.invoke(scopeImpl, input)
+              if (scopeImpl.isCanceledPointer) break
             }
 
             input.changedToUpIgnoreConsumed() -> {
