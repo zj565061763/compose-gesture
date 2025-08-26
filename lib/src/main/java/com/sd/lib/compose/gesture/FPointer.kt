@@ -391,10 +391,9 @@ private class FPointerScopeImpl(
   fun onDownBefore(input: PointerInputChange) {
     if (_pointerHolder.containsKey(input.id)) return
     _pointerHolder[input.id] = PointerInfo(null)
-    _pointerHolder.size.let { count ->
-      if (_maxPointerCount < count) {
-        _maxPointerCount = count
-      }
+    val count = _pointerHolder.size
+    if (count > _maxPointerCount) {
+      _maxPointerCount = count
     }
   }
 
@@ -410,9 +409,7 @@ private class FPointerScopeImpl(
     var velocityTracker: VelocityTracker?,
   ) {
     fun getOrCreateVelocityTracker(): VelocityTracker {
-      return velocityTracker ?: VelocityTracker().also {
-        velocityTracker = it
-      }
+      return velocityTracker ?: VelocityTracker().also { velocityTracker = it }
     }
   }
 }
