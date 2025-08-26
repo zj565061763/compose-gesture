@@ -51,6 +51,12 @@ private fun Sample(
           calculateZoom = true
           calculateRotation = true
         },
+        onDown = {
+          logMsg { "onDown pointerCount:$pointerCount" }
+        },
+        onUp = {
+          logMsg { "onUp pointerCount:$pointerCount maxPointerCount:$maxPointerCount" }
+        },
         onCalculate = {
           if (currentEvent.fHasConsumedPositionChange()) {
             cancelPointer()
