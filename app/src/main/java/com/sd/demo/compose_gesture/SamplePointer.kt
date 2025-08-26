@@ -58,6 +58,7 @@ private fun Sample(
           }
 
           if ((scale < 0.3f && zoom < 1f) || (scale > 5f && zoom > 1f)) {
+            cancelPointer()
             return@fPointer
           }
 
