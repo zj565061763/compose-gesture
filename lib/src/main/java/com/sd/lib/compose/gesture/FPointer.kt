@@ -34,7 +34,7 @@ fun Modifier.fPointer(
   pass: PointerEventPass = PointerEventPass.Main,
   touchSlop: Float? = null,
   sharePointerInputWithSiblings: Boolean = false,
-  onStart: (FPointerScope.() -> Unit)? = null,
+  onStart: (FPointerStartScope.() -> Unit)? = null,
   onDown: (FPointerScope.(PointerInputChange) -> Unit)? = null,
   onUp: (FPointerScope.(PointerInputChange) -> Unit)? = null,
   onMove: (FPointerScope.(PointerInputChange) -> Unit)? = null,
@@ -56,7 +56,7 @@ private class FPointerElement(
   private var pass: PointerEventPass,
   private var touchSlop: Float?,
   private var sharePointerInputWithSiblings: Boolean,
-  private var onStart: (FPointerScope.() -> Unit)?,
+  private var onStart: (FPointerStartScope.() -> Unit)?,
   private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
   private var onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
   private var onMove: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -136,7 +136,7 @@ private class FPointerNode(
   private var pass: PointerEventPass,
   private var touchSlop: Float?,
   private var sharePointerInputWithSiblings: Boolean,
-  private var onStart: (FPointerScope.() -> Unit)?,
+  private var onStart: (FPointerStartScope.() -> Unit)?,
   private var onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
   private var onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
   private var onMove: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -150,7 +150,7 @@ private class FPointerNode(
     pass: PointerEventPass,
     touchSlop: Float?,
     sharePointerInputWithSiblings: Boolean,
-    onStart: (FPointerScope.() -> Unit)?,
+    onStart: (FPointerStartScope.() -> Unit)?,
     onDown: (FPointerScope.(PointerInputChange) -> Unit)?,
     onUp: (FPointerScope.(PointerInputChange) -> Unit)?,
     onMove: (FPointerScope.(PointerInputChange) -> Unit)?,
@@ -262,12 +262,13 @@ private class FPointerNode(
               if (!started) {
                 started = true
 
-                onStart?.invoke(scopeImpl)
+                val startScopeImpl = FPointerStartScopeImpl(this)
+                onStart?.invoke(startScopeImpl)
                 if (scopeImpl.isCanceledPointer) break
 
-                calculatePan = scopeImpl.calculatePan
-                calculateZoom = scopeImpl.calculateZoom
-                calculateRotation = scopeImpl.calculateRotation
+                calculatePan = startScopeImpl.calculatePan
+                calculateZoom = startScopeImpl.calculateZoom
+                calculateRotation = startScopeImpl.calculateRotation
               }
               scopeImpl.onDownBefore(input)
               onDown?.invoke(scopeImpl, input)
@@ -315,13 +316,6 @@ interface FPointerScope : AwaitPointerEventScope {
   /** 触摸点的中心点 */
   val centroid: Offset
 
-  /** 是否计算[pan] */
-  var calculatePan: Boolean
-  /** 是否计算[zoom] */
-  var calculateZoom: Boolean
-  /** 是否计算[rotation] */
-  var calculateRotation: Boolean
-
   /** 是否被取消[cancelPointer] */
   val isCanceledPointer: Boolean
 
@@ -333,6 +327,23 @@ interface FPointerScope : AwaitPointerEventScope {
 
   /** 取消触摸事件监听 */
   fun cancelPointer()
+}
+
+interface FPointerStartScope : AwaitPointerEventScope {
+  /** 是否计算距离 */
+  var calculatePan: Boolean
+  /** 是否计算缩放 */
+  var calculateZoom: Boolean
+  /** 是否计算旋转 */
+  var calculateRotation: Boolean
+}
+
+private class FPointerStartScopeImpl(
+  awaitPointerEventScope: AwaitPointerEventScope,
+) : FPointerStartScope, AwaitPointerEventScope by awaitPointerEventScope {
+  override var calculatePan: Boolean = false
+  override var calculateZoom: Boolean = false
+  override var calculateRotation: Boolean = false
 }
 
 private class FPointerScopeImpl(
@@ -355,10 +366,6 @@ private class FPointerScopeImpl(
   override val zoom: Float get() = _zoom
   override val rotation: Float get() = _rotation
   override val centroid: Offset get() = _centroid
-
-  override var calculatePan: Boolean = false
-  override var calculateZoom: Boolean = false
-  override var calculateRotation: Boolean = false
 
   override val isCanceledPointer: Boolean get() = _isCanceled
 
